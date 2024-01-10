@@ -142,13 +142,9 @@ function showAddDialog() {
 function showEditDialog(item: any) {}
 function showDelDialog(item: any) {}
 function addMerchandise() {}
-function MerchandiseBigTypeSelectDone(){
-
-}
-function MerchandiseMiddleTypeSelectDone(){
-
-}
-function MerchandiseSmallTypeSelectDone(){}
+function MerchandiseBigTypeSelectDone() {}
+function MerchandiseMiddleTypeSelectDone() {}
+function MerchandiseSmallTypeSelectDone() {}
 async function getWareHouseDate() {}
 </script>
 <template>
@@ -238,8 +234,8 @@ async function getWareHouseDate() {}
       </v-data-table>
     </v-col>
   </v-row>
-  <!-- 商品 -->
-  <v-dialog v-model="addDialog" min-width="400px" width="560px">
+  <!--新增商品 -->
+  <v-dialog v-model="addDialog" width="50vw" heighth="50vh">
     <v-card>
       <v-toolbar color="blue">
         <v-toolbar-title> 新增商品 </v-toolbar-title>
@@ -250,7 +246,89 @@ async function getWareHouseDate() {}
       </v-toolbar>
       <v-card-text class="mt-4">
         <v-row>
-          
+          <v-col cols="5">
+            <v-text-field
+              label="商品名称"
+              v-model="searchSupplierName"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="addDialogInput"
+            >
+            </v-text-field>
+            <v-text-field
+              label="商品描述"
+              v-model="searchSupplierName"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="addDialogInput"
+            >
+            </v-text-field>
+            <v-text-field
+              label="商品品牌"
+              v-model="searchSupplierName"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="addDialogInput"
+            >
+            </v-text-field>
+            <v-text-field
+              label="商品重量"
+              v-model="searchSupplierName"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="addDialogInput"
+            >
+            </v-text-field>
+            <v-text-field
+              label="商品高度"
+              v-model="searchSupplierName"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="addDialogInput"
+            >
+            </v-text-field>
+            <v-text-field
+              label="商品宽度"
+              v-model="searchSupplierName"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="addDialogInput"
+            >
+            </v-text-field>
+            <v-text-field
+              label="商品成本"
+              v-model="searchSupplierName"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="addDialogInput"
+            >
+            </v-text-field>
+            <v-text-field
+              label="商品价格"
+              v-model="searchSupplierName"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="addDialogInput"
+            >
+            </v-text-field>
+            <v-text-field
+              label="商品颜色"
+              v-model="searchSupplierName"
+              variant="outlined"
+              density="compact"
+              hide-details
+              class="addDialogInput"
+            >
+            </v-text-field>
+          </v-col>
         </v-row>
       </v-card-text>
       <div class="d-flex justify-end mr-6 mb-4">
@@ -269,3 +347,8 @@ async function getWareHouseDate() {}
     </v-card>
   </v-dialog>
 </template>
+<style>
+.addDialogInput {
+  margin-top: 16px;
+}
+</style>
