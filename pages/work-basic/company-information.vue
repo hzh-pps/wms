@@ -12,9 +12,5 @@ useSeoMeta({
   // 社交媒体分享该页面时显示的图片
   ogImage: "/同日图标.png",
 });
-// 不采用布局
-definePageMeta({
-  layout: "default",
-});
 </script>
 <template></template>

@@ -12,10 +12,7 @@ useSeoMeta({
   // 社交媒体分享该页面时显示的图片
   ogImage: "/同日图标.png",
 });
-// 不采用布局
-definePageMeta({
-  layout: "default",
-});
+
 let searchMerchandiseCode = ref<any>(null);
 let searchMerchandiseName = ref<any>(null);
 let searchMerchandiseTypeId = ref<any>(null);
@@ -142,13 +139,9 @@ function showAddDialog() {
 function showEditDialog(item: any) {}
 function showDelDialog(item: any) {}
 function addMerchandise() {}
-function MerchandiseBigTypeSelectDone(){
-
-}
-function MerchandiseMiddleTypeSelectDone(){
-
-}
-function MerchandiseSmallTypeSelectDone(){}
+function MerchandiseBigTypeSelectDone() {}
+function MerchandiseMiddleTypeSelectDone() {}
+function MerchandiseSmallTypeSelectDone() {}
 async function getWareHouseDate() {}
 </script>
 <template>
@@ -249,9 +242,7 @@ async function getWareHouseDate() {}
         </v-btn>
       </v-toolbar>
       <v-card-text class="mt-4">
-        <v-row>
-          
-        </v-row>
+        <v-row> </v-row>
       </v-card-text>
       <div class="d-flex justify-end mr-6 mb-4">
         <v-btn
