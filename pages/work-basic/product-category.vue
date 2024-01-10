@@ -123,7 +123,9 @@ function showEditDialog(item: any) {
 }
 // 确认修改
 async function editSation() {
-  const data = await useHttp("/commoditytypes", "put", productInfo.value);
+  const data = await useHttp(`/commoditytypes/${productInfo.value.id}`, "put", {
+    data: productInfo.value,
+  });
   getProductData();
   editDialog.value = false;
 }
@@ -135,7 +137,12 @@ function showDelDialog(item: any) {
 }
 // 确认删除
 async function delSation() {
-  console.log(productInfo.value);
+  const data = await useHttp(
+    `/commoditytypes/${productInfo.value.id}`,
+    "delete"
+  );
+  getProductData();
+  delDialog.value = false;
 }
 </script>
 <template>
