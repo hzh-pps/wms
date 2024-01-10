@@ -21,33 +21,33 @@ let tab = ref("one");
         <v-tabs v-model="tab" bg-color="blue-darken-2">
           <v-tab value="one">
             <v-icon class="mr-2 mt-1">fa-solid fa-circle-exclamation</v-icon>
-            发货单</v-tab
+            出库清单</v-tab
           >
           <v-tab value="two">
-            <v-icon class="mr-2 mt-1">fa-solid fa-layer-group</v-icon>待拣货
+            <v-icon class="mr-2 mt-1">fa-solid fa-layer-group</v-icon>待出库
           </v-tab>
           <v-tab value="three">
-            <v-icon class="mr-2 mt-1">fa-solid fa-layer-group</v-icon>已拣货
+            <v-icon class="mr-2 mt-1">fa-solid fa-layer-group</v-icon>打包
           </v-tab>
 
           <v-tab value="four">
-            <v-icon class="mr-2 mt-1">fa-solid fa-mobile</v-icon>打包</v-tab
+            <v-icon class="mr-2 mt-1">fa-solid fa-mobile</v-icon>发货单</v-tab
           >
           <v-tab value="five">
-            <v-icon class="mr-2 mt-1">fa-solid fa-mobile</v-icon>待出库</v-tab
+            <v-icon class="mr-2 mt-1">fa-solid fa-mobile</v-icon>发货</v-tab
           >
           <v-tab value="six">
-            <v-icon class="mr-2 mt-1">fa-solid fa-mobile</v-icon>出库清单</v-tab
+            <v-icon class="mr-2 mt-1">fa-solid fa-mobile</v-icon>签收</v-tab
           >
         </v-tabs>
         <v-card-text>
           <v-window v-model="tab">
-            <v-window-item value="one"> 发货单 </v-window-item>
-            <v-window-item value="two"> 待拣货 </v-window-item>
-            <v-window-item value="three"> 已拣货 </v-window-item>
-            <v-window-item value="four"> 打包 </v-window-item>
-            <v-window-item value="five"> 待出库 </v-window-item>
-            <v-window-item value="six"> 出库清单 </v-window-item>
+            <v-window-item value="one">出库清单</v-window-item>
+            <v-window-item value="two">待出库</v-window-item>
+            <v-window-item value="three">打包</v-window-item>
+            <v-window-item value="four">发货单</v-window-item>
+            <v-window-item value="five">发货</v-window-item>
+            <v-window-item value="six">签收</v-window-item>
           </v-window>
         </v-card-text>
       </v-card>
