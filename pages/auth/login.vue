@@ -12,12 +12,16 @@ useSeoMeta({
   // 社交媒体分享该页面时显示的图片
   ogImage: "/同日图标.png",
 });
+// 页面缓存
+definePageMeta({
+  keepalive: false,
+});
+
 // 不采用布局
 definePageMeta({
   layout: false,
 });
 onMounted(() => {
-  useCookie("token").value = null;
   // 页面初始动画
   useGsap.from(".initial-animation", {
     y: 100,
@@ -38,8 +42,15 @@ const { captchaCountDown, captchaDisable, setCountDown } =
 // 页面渲染完成时，获取 Cookie，填充登陆输入框
 // useCookie 会自动转换类型，如果 cookie 中储存的是数字，那么 useCookie.value 获取的值也是数字类型，需要手动转换成字符串类型
 onMounted(function () {
-  tel.value = useCookie("tel").value?.toString();
-  password.value = useCookie("password").value?.toString();
+  useCookie("token").value = null;
+  useCookie("menuList").value = null;
+  if (useCookie("tel").value) {
+    tel.value = useCookie("tel").value?.toString();
+    password.value = useCookie("password").value?.toString();
+  } else {
+    tel.value = "123@qq.com";
+    password.value = "123";
+  }
 });
 
 // 正在选择的登陆 tab
@@ -82,9 +93,19 @@ async function passwordLogin() {
   });
 
   useCookie("token").value = data.jwt;
+  await nextTick(); // 等待下一个“tick”
   // useCookie("refreshToken").value = data.refresh_token;
+  getList();
 
   // 登陆成功的提示
+  // useCookieSplit("btnList", 10, data.data.btnList);
+  setSnackbar("green", "登陆成功，正在跳转...");
+  setTimeout(function () {
+    router.push({ path: "/home" });
+  }, 1000);
+}
+
+async function getList() {
   const data2: any = await useHttp("/wms-permissions", "get");
   const menuList: any = [];
   data2.data.forEach((item: any) => {
@@ -100,14 +121,7 @@ async function passwordLogin() {
   });
   menuList.sort((a: any, b: any) => a.sort_node - b.sort_node);
   useCookieSplit("menuList", 5, menuList);
-  // useCookieSplit("btnList", 10, data.data.btnList);
-  setSnackbar("green", "登陆成功，正在跳转...");
-
-  setTimeout(function () {
-    router.push({ path: "/home" });
-  }, 1000);
 }
-
 // 函数防抖，防止连续点击登陆按钮时，多次调用后台接口，提升性能
 const debouncePasswordLogin = useDebounce(passwordLogin, 1000);
 </script>

@@ -170,7 +170,7 @@ onMounted(() => {
 let searchArea = ref<any>("");
 let searchWareHouse = ref<any>("A");
 watch(searchWareHouse, function () {
-  getBillData();
+  getBillData(); 
 });
 let searchContainer = ref<any>("");
 let searchName = ref<any>("");

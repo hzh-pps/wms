@@ -18,36 +18,28 @@ let tab = ref("one");
   <v-row class="ma-2">
     <v-col cols="12">
       <v-card>
-        <v-tabs v-model="tab" bg-color="blue-darken-2">
+        <v-tabs v-model="tab">
           <v-tab value="one">
             <v-icon class="mr-2 mt-1">fa-solid fa-circle-exclamation</v-icon>
-            出库清单</v-tab
+            出库制单</v-tab
           >
           <v-tab value="two">
-            <v-icon class="mr-2 mt-1">fa-solid fa-layer-group</v-icon>待出库
+            <v-icon class="mr-2 mt-1">fa-solid fa-layer-group</v-icon>拣货打包
           </v-tab>
           <v-tab value="three">
-            <v-icon class="mr-2 mt-1">fa-solid fa-layer-group</v-icon>打包
+            <v-icon class="mr-2 mt-1">fa-solid fa-layer-group</v-icon>发货单
           </v-tab>
 
           <v-tab value="four">
-            <v-icon class="mr-2 mt-1">fa-solid fa-mobile</v-icon>发货单</v-tab
-          >
-          <v-tab value="five">
-            <v-icon class="mr-2 mt-1">fa-solid fa-mobile</v-icon>发货</v-tab
-          >
-          <v-tab value="six">
-            <v-icon class="mr-2 mt-1">fa-solid fa-mobile</v-icon>签收</v-tab
+            <v-icon class="mr-2 mt-1">fa-solid fa-mobile</v-icon>出库记录</v-tab
           >
         </v-tabs>
         <v-card-text>
           <v-window v-model="tab">
             <v-window-item value="one">出库清单</v-window-item>
-            <v-window-item value="two">待出库</v-window-item>
-            <v-window-item value="three">打包</v-window-item>
+            <v-window-item value="two">拣货打包</v-window-item>
+            <v-window-item value="three">发货出库</v-window-item>
             <v-window-item value="four">发货单</v-window-item>
-            <v-window-item value="five">发货</v-window-item>
-            <v-window-item value="six">签收</v-window-item>
           </v-window>
         </v-card-text>
       </v-card>
