@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import Config from "chart.js/dist/core/core.config";
-
+// 获取消息条对象
+const { snackbarShow, snackbarColor, snackbarText, setSnackbar } =
+  useSnackbar();
 // 搜索引擎优化
 useSeoMeta({
   // 该页面的标题
@@ -29,6 +31,7 @@ let addMerchandiseWidth = ref<any>(null);
 let addMerchandiseCost = ref<any>(null);
 let addMerchandisePrice = ref<any>(null);
 let addType = ref<any>(null);
+let delType = ref<any>(null);
 let formMerchandiseName = ref<any>(null);
 let addMerchandiseTypeName = ref<any>(null);
 let addDialog = ref<boolean>(false);
@@ -40,6 +43,7 @@ let deleteMerchandiseTypeDialog = ref<boolean>(false);
 let selectedBigType = ref<any>(null);
 let selectedMiddleType = ref<any>(null);
 let selectedSmallType = ref<any>(null);
+let form = ref<any>(null);
 // 商品大类列表
 let productBigCategoryList = ref<any[]>([]);
 // 商品中类列表
@@ -57,7 +61,7 @@ function GetPidDate(item: any) {
 async function getBigTypeData() {
   // 将查询参数附加到 URL
   const data: any = await useHttp(`/commoditytypes?${GetPidDate("0")}`, "get");
-  productBigCategoryList.value = normalizeStrapiData(data);
+  productBigCategoryList.value = data.data;
 }
 // 获取商品中类列表
 async function getMiddleTypeData(item: any) {
@@ -66,9 +70,8 @@ async function getMiddleTypeData(item: any) {
     `/commoditytypes?${GetPidDate(item.id)}`,
     "get"
   );
-  productMiddleCategoryList.value = normalizeStrapiData(data);
+  productMiddleCategoryList.value = data.data;
   selectedBigType.value = item;
-  console.log(item);
 }
 // 获取商品小类列表
 async function getSmallTypeData(item: any) {
@@ -77,16 +80,10 @@ async function getSmallTypeData(item: any) {
     `/commoditytypes?${GetPidDate(item.id)}`,
     "get"
   );
-  productSmallCategoryList.value = normalizeStrapiData(data);
+  productSmallCategoryList.value = data.data;
   selectedMiddleType.value = item;
 }
-// 格式化数据
-function normalizeStrapiData(strapiResponse: any) {
-  return strapiResponse.data.map((item: any) => ({
-    id: item.id,
-    ...item.attributes,
-  }));
-}
+
 //商品数据表头
 let headers = ref<any[]>([
   {
@@ -206,12 +203,45 @@ function showAddDialog() {
 }
 function showEditDialog(item: any) {}
 function showDelDialog(item: any) {}
-function addMerchandise() {}
-function addSation() {
+//添加商品
+async function addMerchandise() {
+  if (!form.value) return;
+  addDialog = false;
+  let productInfo = {
+        categoryname: addMerchandiseTypeName.value,
+        pid: "0",
+      };
+  const data: any = await useHttp("/commodities", "post", {
+    data: form.value,
+  });
+}
+//删除商品类别
+async function delSation() {
+  await useHttp(`/commoditytypes/${delType.value.id}`, "delete");
+  deleteMerchandiseTypeDialog.value = false;
+  setSnackbar("red", "删除成功");
+  if (delType.value.pid == "0") {
+    getBigTypeData();
+  } else {
+    getMiddleTypeData(selectedBigType.value);
+    getSmallTypeData(selectedMiddleType.value);
+  }
+}
+//添加商品类别
+async function addSation() {
   if (!formMerchandiseName.value) return;
   addMerchandiseTypeDialog.value = false;
   switch (addType.value) {
     case "big":
+      let productInfo = {
+        categoryname: addMerchandiseTypeName.value,
+        pid: "0",
+      };
+      const data: any = await useHttp("/commoditytypes", "post", {
+        data: productInfo,
+      });
+      getBigTypeData();
+      setSnackbar("green", "添加成功");
       break;
     case "middle":
       break;
@@ -219,15 +249,9 @@ function addSation() {
       break;
   }
 }
-function validate() {
-  if (addMerchandiseTypeName) {
-    return true;
-  }
-  return "请输入类别名称";
-}
 async function getWareHouseDate() {}
-// 密码校验规则
-const merchandiseNameRule = ref<any[]>([(v: any) => !!v || "类别不能为空"]);
+// 不为空
+const isNullRule = ref<any[]>([(v: any) => !!v || "该字段不能为空"]);
 </script>
 <template>
   <v-row class="ma-2">
@@ -329,87 +353,98 @@ const merchandiseNameRule = ref<any[]>([(v: any) => !!v || "类别不能为空"]
       <v-card-text>
         <v-row>
           <v-col cols="3">
-            <v-text-field
-              label="商品名称"
-              v-model="addMerchandiseName"
-              variant="outlined"
-              density="compact"
-              hide-details
-              class="addDialogInput"
-            >
-            </v-text-field>
-            <v-text-field
-              label="商品描述"
-              v-model="addMerchandiseDescription"
-              variant="outlined"
-              density="compact"
-              hide-details
-              class="addDialogInput"
-            >
-            </v-text-field>
-            <v-text-field
-              label="商品品牌"
-              v-model="addMerchandiseBrand"
-              variant="outlined"
-              density="compact"
-              hide-details
-              class="addDialogInput"
-            >
-            </v-text-field>
-            <v-text-field
-              label="商品重量"
-              v-model="addMerchandiseWeight"
-              variant="outlined"
-              density="compact"
-              hide-details
-              class="addDialogInput"
-            >
-            </v-text-field>
-            <v-text-field
-              label="商品高度"
-              v-model="addMerchandiseHeight"
-              variant="outlined"
-              density="compact"
-              hide-details
-              class="addDialogInput"
-            >
-            </v-text-field>
-            <v-text-field
-              label="商品宽度"
-              v-model="addMerchandiseWidth"
-              variant="outlined"
-              density="compact"
-              hide-details
-              class="addDialogInput"
-            >
-            </v-text-field>
-            <v-text-field
-              label="商品成本"
-              v-model="addMerchandiseCost"
-              variant="outlined"
-              density="compact"
-              hide-details
-              class="addDialogInput"
-            >
-            </v-text-field>
-            <v-text-field
-              label="商品价格"
-              v-model="addMerchandisePrice"
-              variant="outlined"
-              density="compact"
-              hide-details
-              class="addDialogInput"
-            >
-            </v-text-field>
-            <v-text-field
-              label="商品颜色"
-              v-model="addMerchandiseColor"
-              variant="outlined"
-              density="compact"
-              hide-details
-              class="addDialogInput"
-            >
-            </v-text-field>
+            <v-form v-model="form">
+              <v-text-field
+                label="商品名称"
+                v-model="addMerchandiseName"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="addDialogInput"
+                :rules="isNullRule"
+              >
+              </v-text-field>
+              <v-text-field
+                label="商品描述"
+                v-model="addMerchandiseDescription"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="addDialogInput"
+                :rules="isNullRule"
+              >
+              </v-text-field>
+              <v-text-field
+                label="商品品牌"
+                v-model="addMerchandiseBrand"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="addDialogInput"
+                :rules="isNullRule"
+              >
+              </v-text-field>
+              <v-text-field
+                label="商品重量"
+                v-model="addMerchandiseWeight"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="addDialogInput"
+                :rules="isNullRule"
+              >
+              </v-text-field>
+              <v-text-field
+                label="商品高度"
+                v-model="addMerchandiseHeight"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="addDialogInput"
+                :rules="isNullRule"
+              >
+              </v-text-field>
+              <v-text-field
+                label="商品宽度"
+                v-model="addMerchandiseWidth"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="addDialogInput"
+                :rules="isNullRule"
+              >
+              </v-text-field>
+              <v-text-field
+                label="商品成本"
+                v-model="addMerchandiseCost"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="addDialogInput"
+                :rules="isNullRule"
+              >
+              </v-text-field>
+              <v-text-field
+                label="商品价格"
+                v-model="addMerchandisePrice"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="addDialogInput"
+                :rules="isNullRule"
+              >
+              </v-text-field>
+              <v-text-field
+                label="商品颜色"
+                v-model="addMerchandiseColor"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="addDialogInput"
+                :rules="isNullRule"
+              >
+              </v-text-field>
+            </v-form>
           </v-col>
           <v-col cols="3">
             <div
@@ -440,6 +475,17 @@ const merchandiseNameRule = ref<any[]>([(v: any) => !!v || "类别不能为空"]
                         {{ item.categoryname }}
                       </v-list-item-title>
                     </v-list-item-content>
+                    <template v-slot:append>
+                      <v-icon
+                        @click.stop="
+                          (deleteMerchandiseTypeDialog = true), (delType = item)
+                        "
+                        color="red"
+                        size="large"
+                      >
+                        fa-solid fa-trash
+                      </v-icon>
+                    </template>
                   </v-list-item>
                 </v-list>
               </v-card-text>
@@ -452,7 +498,11 @@ const merchandiseNameRule = ref<any[]>([(v: any) => !!v || "类别不能为空"]
                   height="3rem"
                   style="position: absolute; bottom: 0"
                   rounded="xl"
-                  @click="(addMerchandiseTypeDialog = true), (addType = 'big')"
+                  @click="
+                    (addMerchandiseTypeDialog = true),
+                      (addType = 'big'),
+                      (addMerchandiseTypeName = null)
+                  "
                 >
                   新增大类
                 </v-btn>
@@ -487,8 +537,19 @@ const merchandiseNameRule = ref<any[]>([(v: any) => !!v || "类别不能为空"]
                       <v-list-item-title class="text-h6 font-weight-regular">
                         {{ item.categoryname }}
                       </v-list-item-title>
-                    </v-list-item-content></v-list-item
-                  >
+                    </v-list-item-content>
+                    <template v-slot:append>
+                      <v-icon
+                        @click.stop="
+                          (deleteMerchandiseTypeDialog = true), (delType = item)
+                        "
+                        color="red"
+                        size="large"
+                      >
+                        fa-solid fa-trash
+                      </v-icon>
+                    </template>
+                  </v-list-item>
                 </v-list>
               </v-card-text>
               <v-card-action>
@@ -502,7 +563,9 @@ const merchandiseNameRule = ref<any[]>([(v: any) => !!v || "类别不能为空"]
                   style="position: absolute; bottom: 0"
                   rounded="xl"
                   @click="
-                    (addMerchandiseTypeDialog = true), (addType = 'middle')
+                    (addMerchandiseTypeDialog = true),
+                      (addType = 'middle'),
+                      (addMerchandiseTypeName = null)
                   "
                 >
                   新增中类
@@ -538,8 +601,19 @@ const merchandiseNameRule = ref<any[]>([(v: any) => !!v || "类别不能为空"]
                       <v-list-item-title class="text-h6 font-weight-regular">
                         {{ item.categoryname }}
                       </v-list-item-title>
-                    </v-list-item-content></v-list-item
-                  >
+                    </v-list-item-content>
+                    <template v-slot:append>
+                      <v-icon
+                        @click.stop="
+                          (deleteMerchandiseTypeDialog = true), (delType = item)
+                        "
+                        color="red"
+                        size="large"
+                      >
+                        fa-solid fa-trash
+                      </v-icon>
+                    </template>
+                  </v-list-item>
                 </v-list>
               </v-card-text>
               <v-card-action>
@@ -599,7 +673,7 @@ const merchandiseNameRule = ref<any[]>([(v: any) => !!v || "类别不能为空"]
                 class="my-2"
                 color="blue"
                 autofocus
-                :rules="merchandiseNameRule"
+                :rules="isNullRule"
               ></v-text-field
             ></v-form>
           </v-col>
@@ -658,6 +732,12 @@ const merchandiseNameRule = ref<any[]>([(v: any) => !!v || "类别不能为空"]
       </div>
     </v-card>
   </v-dialog>
+  <v-snackbar location="top" v-model="snackbarShow" :color="snackbarColor">
+    {{ snackbarText }}
+    <template v-slot:actions>
+      <v-btn variant="tonal" @click="snackbarShow = false">关闭</v-btn>
+    </template>
+  </v-snackbar>
 </template>
 <style>
 .addDialogInput {
