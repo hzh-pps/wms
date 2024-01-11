@@ -131,15 +131,9 @@ async function getInventoryList() {
   }).toString();
 
   const data: any = await useHttp(`/deliveryreceipts?${queryParams}`, "get");
-  inventoryList.value = normalizeStrapiData(data);
+  inventoryList.value = data.data;
 }
-// 格式化数据
-function normalizeStrapiData(strapiResponse: any) {
-  return strapiResponse.data.map((item: any) => ({
-    id: item.id,
-    ...item.attributes,
-  }));
-}
+
 //
 onMounted(() => {
   getInventoryList();

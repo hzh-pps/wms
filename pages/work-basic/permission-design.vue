@@ -95,7 +95,7 @@ function showAddPage() {
     sort_node: 0,
     parent_id: folderInfo.value.id,
     permission_api_url: "",
-    page_url: folderInfo.value.attributes.page_url,
+    page_url: folderInfo.value.page_url,
     is_menu: true,
     icon_name: "",
     action_name: "",
@@ -109,7 +109,7 @@ function showAddBtn(item: any) {
     sort_node: 0,
     parent_id: item.id,
     permission_api_url: "",
-    page_url: item.attributes.page_url,
+    page_url: item.page_url,
     is_menu: false,
     icon_name: "",
     action_name: "",
@@ -157,8 +157,7 @@ function showAddBtn(item: any) {
               :key="index"
               @click="showPageUrlData(item)"
             >
-              <v-list-item :title="item.attributes.permission_title">
-              </v-list-item>
+              <v-list-item :title="item.permission_title"> </v-list-item>
             </v-list>
           </v-col>
         </v-row>
@@ -189,7 +188,7 @@ function showAddBtn(item: any) {
               <v-expansion-panel
                 v-for="(item, index) in pageUrlList"
                 :key="index"
-                :title="item.attributes.permission_title"
+                :title="item.permission_title"
                 @click="showBtnData(item)"
               >
                 <v-expansion-panel-text>
@@ -211,7 +210,7 @@ function showAddBtn(item: any) {
                         v-for="(item_, index_) in btnList"
                         :key="index_"
                       >
-                        <v-list-item :title="item_.attributes.permission_title">
+                        <v-list-item :title="item_.permission_title">
                         </v-list-item>
                       </v-list>
                     </v-col>
