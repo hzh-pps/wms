@@ -118,7 +118,7 @@ onMounted(() => {
   <v-app>
     <v-app-bar color="blue-darken-2" density="compact" extension-height="44">
       <template v-slot:prepend>
-        <v-img src="云联图标.png" width="60px" alt="同日WMS图标" />
+        <v-img src="/云联图标.png" width="60px" alt="同日WMS图标" />
         <div class="font-weight-bold text-h5 ml-1">云联 WMS 系统</div>
       </template>
 

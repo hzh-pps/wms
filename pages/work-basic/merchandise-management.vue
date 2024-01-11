@@ -14,10 +14,7 @@ useSeoMeta({
   // 社交媒体分享该页面时显示的图片
   ogImage: "/同日图标.png",
 });
-// 不采用布局
-definePageMeta({
-  layout: "default",
-});
+
 let searchMerchandiseCode = ref<any>(null);
 let searchMerchandiseName = ref<any>(null);
 let searchMerchandiseTypeId = ref<any>(null);
