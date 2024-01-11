@@ -170,7 +170,7 @@ onMounted(() => {
 let searchArea = ref<any>("");
 let searchWareHouse = ref<any>("A");
 watch(searchWareHouse, function () {
-  getBillData(); 
+  getBillData();
 });
 let searchContainer = ref<any>("");
 let searchName = ref<any>("");
@@ -196,169 +196,185 @@ function resetFilter() {
   searchDateEnd = new Date().toISOString().substring(0, 10);
   getBillData();
 }
+let tab = ref<string>("one");
 </script>
 <template>
   <v-row class="ma-2">
-    <v-col cols="3">
-      <v-text-field
-        label="库位"
-        v-model="searchArea"
-        variant="outlined"
-        density="compact"
-        hide-details
-        class="mt-2"
-      ></v-text-field>
+    <v-col cols="1">
+      <v-tabs v-model="tab" class="mt-2" direction="vertical">
+        <v-tab value="one">库存流水</v-tab>
+        <v-tab value="two">历时库存</v-tab>
+      </v-tabs>
     </v-col>
-    <v-col cols="3">
-      <v-text-field
-        label="容器号"
-        v-model="searchContainer"
-        variant="outlined"
-        density="compact"
-        hide-details
-        class="mt-2"
-      ></v-text-field>
-    </v-col>
-    <v-col cols="3">
-      <v-text-field
-        label="物料名称"
-        v-model="searchName"
-        variant="outlined"
-        density="compact"
-        hide-details
-        class="mt-2"
-      ></v-text-field>
-    </v-col>
-    <v-col cols="3">
-      <v-text-field
-        label="物料规格"
-        v-model="searchGg"
-        variant="outlined"
-        density="compact"
-        hide-details
-        class="mt-2"
-      ></v-text-field>
-    </v-col>
-    <v-col cols="3">
-      <v-text-field
-        label="物料编码"
-        v-model="searchCode"
-        variant="outlined"
-        density="compact"
-        hide-details
-        class="mt-2"
-      ></v-text-field>
-    </v-col>
-    <v-col cols="3">
-      <v-text-field
-        label="批次"
-        v-model="searchLot"
-        variant="outlined"
-        density="compact"
-        hide-details
-        class="mt-2"
-      ></v-text-field>
-    </v-col>
-    <v-col cols="3">
-      <v-text-field
-        label="最早创建时间"
-        v-model="searchDateStart"
-        type="date"
-        variant="outlined"
-        density="compact"
-        hide-details
-        class="mt-2"
-      ></v-text-field>
-    </v-col>
-    <v-col cols="3">
-      <v-text-field
-        label="最晚创建时间"
-        v-model="searchDateEnd"
-        type="date"
-        variant="outlined"
-        density="compact"
-        hide-details
-        class="mt-2"
-      ></v-text-field>
-    </v-col>
-    <v-col cols="12">
-      <v-row>
-        <v-col cols="2">
-          <v-btn
-            color="blue-darken-2"
-            class="mr-2 mt-2"
-            size="default"
-            @click="filter"
-            >查询</v-btn
-          >
-          <v-btn
-            color="red"
-            class="mr-2 mt-2"
-            size="default"
-            @click="resetFilter"
-            >重置查询</v-btn
-          >
-        </v-col>
-        <v-col cols="2">
-          <v-text-field
-            label="总入库数"
-            v-model="inLength"
-            readonly
-            variant="outlined"
-            density="compact"
-            hide-details
-            class="mt-2"
-          ></v-text-field>
-        </v-col>
-        <v-col cols="2">
-          <v-text-field
-            label="总出库数"
-            v-model="outLength"
-            readonly
-            variant="outlined"
-            density="compact"
-            hide-details
-            class="mt-2"
-          ></v-text-field>
-        </v-col>
-        <v-col cols="2">
-          <v-text-field
-            label="剩余库存"
-            v-model="remainder"
-            readonly
-            variant="outlined"
-            density="compact"
-            hide-details
-            class="mt-2"
-          ></v-text-field>
-        </v-col>
-        <v-col cols="2"></v-col>
-        <v-col cols="2">
-          <v-select
-            label="仓库"
-            v-model="searchWareHouse"
-            :items="['A', 'B', 'C', 'D', 'E', 'F', 'G']"
-            variant="outlined"
-            density="compact"
-            hide-details
-            class="mt-2"
-          ></v-select>
-        </v-col>
-      </v-row>
-    </v-col>
-    <v-col cols="12">
-      <v-data-table
-        hover
-        :items-per-page="10"
-        :headers="Headers"
-        :items="billList"
-        style="overflow-x: auto; white-space: nowrap"
-        fixed-footer
-        fixed-header
-        height="610"
-        no-data-text="没有找到符合的数据"
-      >
-      </v-data-table>
+    <v-col cos="11">
+      <v-window v-model="tab">
+        <v-window-item value="one">
+          <v-row>
+            <v-col cols="3">
+              <v-text-field
+                label="库位"
+                v-model="searchArea"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                label="容器号"
+                v-model="searchContainer"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                label="物料名称"
+                v-model="searchName"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                label="物料规格"
+                v-model="searchGg"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                label="物料编码"
+                v-model="searchCode"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                label="批次"
+                v-model="searchLot"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                label="最早创建时间"
+                v-model="searchDateStart"
+                type="date"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                label="最晚创建时间"
+                v-model="searchDateEnd"
+                type="date"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12">
+              <v-row>
+                <v-col cols="2">
+                  <v-btn
+                    color="blue-darken-2"
+                    class="mr-2 mt-2"
+                    size="default"
+                    @click="filter"
+                    >查询</v-btn
+                  >
+                  <v-btn
+                    color="red"
+                    class="mr-2 mt-2"
+                    size="default"
+                    @click="resetFilter"
+                    >重置查询</v-btn
+                  >
+                </v-col>
+                <v-col cols="2">
+                  <v-text-field
+                    label="总入库数"
+                    v-model="inLength"
+                    readonly
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    class="mt-2"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="2">
+                  <v-text-field
+                    label="总出库数"
+                    v-model="outLength"
+                    readonly
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    class="mt-2"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="2">
+                  <v-text-field
+                    label="剩余库存"
+                    v-model="remainder"
+                    readonly
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    class="mt-2"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="2"></v-col>
+                <v-col cols="2">
+                  <v-select
+                    label="仓库"
+                    v-model="searchWareHouse"
+                    :items="['A', 'B', 'C', 'D', 'E', 'F', 'G']"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                    class="mt-2"
+                  ></v-select>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="12">
+              <v-data-table
+                hover
+                :items-per-page="10"
+                :headers="Headers"
+                :items="billList"
+                style="overflow-x: auto; white-space: nowrap"
+                fixed-footer
+                fixed-header
+                height="610"
+                no-data-text="没有找到符合的数据"
+              >
+              </v-data-table>
+            </v-col>
+          </v-row>
+        </v-window-item>
+        <v-window-item value="two">拣货打包</v-window-item>
+      </v-window>
     </v-col>
   </v-row>
 </template>
