@@ -13,10 +13,19 @@ useSeoMeta({
   ogImage: "/同日图标.png",
 });
 let tab = ref("one");
+function showIn() {
+  status.value = "新建";
+  searchNumber.value = "";
+  searchSku.value = "";
+  searchLot.value = "";
+  getInventoryList();
+}
 // 对话框
 let addDialog = ref(false);
 let editDialog = ref(false);
-let deleteDialog = ref(false);
+let delDialog = ref(false);
+let auditDialog = ref(false);
+let groupDialog = ref(false);
 
 let headers = ref<any[]>([
   {
@@ -108,6 +117,7 @@ let headers = ref<any[]>([
 let searchNumber = ref<any>("");
 let searchSku = ref<any>("");
 let searchLot = ref<any>("");
+let status = ref<any>("新建");
 // 入库列表
 let inventoryList = ref<any[]>([]);
 // 获取入库列表
@@ -117,6 +127,7 @@ async function getInventoryList() {
     "filters[receipt_number][$containsi]": searchNumber.value,
     "filters[sku][$containsi]": searchSku.value,
     "filters[sku_lot][$containsi]": searchLot.value,
+    "filters[store_state][$containsi]": status.value,
   }).toString();
 
   const data: any = await useHttp(`/deliveryreceipts?${queryParams}`, "get");
@@ -149,6 +160,7 @@ let inventoryInfo = ref<any>(null);
 function showAddDialog() {
   addDialog.value = true;
   inventoryInfo.value = {
+    receipt_number: "",
     sku: "",
     sku_desc: "",
     sku_spec: "",
@@ -169,21 +181,107 @@ async function addReceipt() {
   getInventoryList();
   addDialog.value = false;
 }
+// 修改收货单
+function showEditDialog(item: any) {
+  inventoryInfo.value = { ...item };
+  editDialog.value = true;
+}
+// 修改收货单
+async function editReceipt() {
+  const data = await useHttp(
+    `/deliveryreceipts/${inventoryInfo.value.id}`,
+    "put",
+    {
+      data: inventoryInfo.value,
+    }
+  );
+  getInventoryList();
+  editDialog.value = false;
+}
+// 删除收货单
+function showDelDialog(item: any) {
+  inventoryInfo.value = { ...item };
+  delDialog.value = true;
+}
+// 删除收货单
+async function delReceipt() {
+  const data = await useHttp(
+    `/deliveryreceipts/${inventoryInfo.value.id}`,
+    "delete"
+  );
+  getInventoryList();
+  delDialog.value = false;
+}
+// 审核
+function showAuditDialog(item: any) {
+  inventoryInfo.value = { ...item };
+  auditDialog.value = true;
+}
+async function auditReceipt() {
+  const data = await useHttp(
+    `/deliveryreceipts/${inventoryInfo.value.id}`,
+    "put",
+    {
+      data: { store_state: "待上架" },
+    }
+  );
+  getInventoryList();
+  auditDialog.value = false;
+}
+// 组盘页面
+function showShelves() {
+  status.value = "待上架";
+  searchNumber.value = "";
+  searchSku.value = "";
+  searchLot.value = "";
+  getInventoryList();
+}
+// 组盘上架
+let selected = ref<any[]>([]);
+let placeCode = ref<any>(null);
+let containerId = ref<any>(null);
+// 组盘上架
+function showGroupDialog(item: any) {
+  if (selected.value.length === 0) {
+    return alert("请选择要组盘的收货单");
+  }
+  groupDialog.value = true;
+}
+// 确认
+async function groupShelves() {
+  for (const item of selected.value) {
+    await useHttp(`/deliveryreceipts/${item.id}`, "put", {
+      data: { store_state: "完成" },
+    });
+  }
+  selected.value = [];
+  groupDialog.value = false;
+  getInventoryList();
+}
+
+// 入库记录
+function showInbound() {
+  status.value = "完成";
+  searchNumber.value = "";
+  searchSku.value = "";
+  searchLot.value = "";
+  getInventoryList();
+}
 </script>
 <template>
   <v-row class="ma-2">
     <v-col cols="12">
       <v-card>
         <v-tabs v-model="tab">
-          <v-tab value="one">
+          <v-tab value="one" @click="showIn">
             <v-icon class="mr-2 mt-1">fa-solid fa-circle-exclamation</v-icon>
             收货制单</v-tab
           >
-          <v-tab value="two">
+          <v-tab value="two" @click="showShelves">
             <v-icon class="mr-2 mt-1">fa-solid fa-layer-group</v-icon>组盘上架
           </v-tab>
 
-          <v-tab value="three">
+          <v-tab value="three" @click="showInbound">
             <v-icon class="mr-2 mt-1">fa-solid fa-mobile</v-icon>入库记录</v-tab
           >
         </v-tabs>
@@ -253,7 +351,37 @@ async function addReceipt() {
                     fixed-header
                     height="610"
                     no-data-text="没有找到符合的数据"
-                  ></v-data-table>
+                  >
+                    <template v-slot:item.action="{ item }">
+                      <!-- 审核 -->
+                      <v-icon
+                        color="blue"
+                        size="small"
+                        class="mr-5"
+                        v-show="item.raw.store_state === '新建'"
+                        @click="showAuditDialog(item.raw)"
+                      >
+                        fa-solid fa-eye
+                      </v-icon>
+                      <!-- 修改 -->
+                      <v-icon
+                        color="blue"
+                        size="small"
+                        class="mr-3"
+                        @click="showEditDialog(item.raw)"
+                      >
+                        fa-solid fa-pen
+                      </v-icon>
+                      <!-- 删除 -->
+                      <v-icon
+                        color="red"
+                        size="small"
+                        @click="showDelDialog(item.raw)"
+                      >
+                        fa-solid fa-trash
+                      </v-icon>
+                    </template>
+                  </v-data-table>
                 </v-col>
               </v-row>
             </v-window-item>
@@ -262,8 +390,8 @@ async function addReceipt() {
               <v-row>
                 <v-col cols="4">
                    <v-text-field
-                    label="商品名称"
-                    v-model="searchMerchandiseName"
+                    label="收货单号"
+                    v-model="searchNumber"
                     variant="outlined"
                     density="compact"
                     hide-details
@@ -271,8 +399,8 @@ async function addReceipt() {
                 </v-col>
                 <v-col cols="4">
                    <v-text-field
-                    label="商品名称"
-                    v-model="searchMerchandiseName"
+                    label="物料名"
+                    v-model="searchSku"
                     variant="outlined"
                     density="compact"
                     hide-details
@@ -280,8 +408,8 @@ async function addReceipt() {
                 </v-col>
                 <v-col cols="4">
                    <v-text-field
-                    label="商品名称"
-                    v-model="searchMerchandiseName"
+                    label="批次号"
+                    v-model="searchLot"
                     variant="outlined"
                     density="compact"
                     hide-details
@@ -306,7 +434,7 @@ async function addReceipt() {
                     color="blue-darken-2"
                     class="mr-2 mt-2"
                     size="default"
-                    @click="resetFilter"
+                    @click="showGroupDialog"
                     >组盘上架</v-btn
                   >
                 </v-col>
@@ -324,7 +452,37 @@ async function addReceipt() {
                     fixed-header
                     height="610"
                     no-data-text="没有找到符合的数据"
-                  ></v-data-table>
+                  >
+                    <template v-slot:item.action="{ item }">
+                      <!-- 审核 -->
+                      <v-icon
+                        color="blue"
+                        size="small"
+                        class="mr-5"
+                        v-show="item.raw.store_state === '新建'"
+                        @click="showAuditDialog(item.raw)"
+                      >
+                        fa-solid fa-eye
+                      </v-icon>
+                      <!-- 修改 -->
+                      <v-icon
+                        color="blue"
+                        size="small"
+                        class="mr-3"
+                        @click="showEditDialog(item.raw)"
+                      >
+                        fa-solid fa-pen
+                      </v-icon>
+                      <!-- 删除 -->
+                      <v-icon
+                        color="red"
+                        size="small"
+                        @click="showDelDialog(item.raw)"
+                      >
+                        fa-solid fa-trash
+                      </v-icon>
+                    </template>
+                  </v-data-table>
                 </v-col>
               </v-row>
             </v-window-item>
@@ -333,8 +491,8 @@ async function addReceipt() {
               <v-row>
                 <v-col cols="4">
                    <v-text-field
-                    label="商品名称"
-                    v-model="searchMerchandiseName"
+                    label="收货单号"
+                    v-model="searchNumber"
                     variant="outlined"
                     density="compact"
                     hide-details
@@ -342,8 +500,8 @@ async function addReceipt() {
                 </v-col>
                 <v-col cols="4">
                    <v-text-field
-                    label="商品名称"
-                    v-model="searchMerchandiseName"
+                    label="物料名"
+                    v-model="searchSku"
                     variant="outlined"
                     density="compact"
                     hide-details
@@ -351,8 +509,8 @@ async function addReceipt() {
                 </v-col>
                 <v-col cols="4">
                    <v-text-field
-                    label="商品名称"
-                    v-model="searchMerchandiseName"
+                    label="批次号"
+                    v-model="searchLot"
                     variant="outlined"
                     density="compact"
                     hide-details
@@ -380,12 +538,45 @@ async function addReceipt() {
                     :items-per-page="10"
                     :headers="headers"
                     :items="inventoryList"
+                    v-model="selected"
+                    show-select
+                    return-object
                     style="overflow-x: auto; white-space: nowrap"
                     fixed-footer
                     fixed-header
                     height="610"
                     no-data-text="没有找到符合的数据"
-                  ></v-data-table>
+                  >
+                    <template v-slot:item.action="{ item }">
+                      <!-- 审核 -->
+                      <v-icon
+                        color="blue"
+                        size="small"
+                        class="mr-5"
+                        v-show="item.raw.store_state === '新建'"
+                        @click="showAuditDialog(item.raw)"
+                      >
+                        fa-solid fa-eye
+                      </v-icon>
+                      <!-- 修改 -->
+                      <v-icon
+                        color="blue"
+                        size="small"
+                        class="mr-3"
+                        @click="showEditDialog(item.raw)"
+                      >
+                        fa-solid fa-pen
+                      </v-icon>
+                      <!-- 删除 -->
+                      <v-icon
+                        color="red"
+                        size="small"
+                        @click="showDelDialog(item.raw)"
+                      >
+                        fa-solid fa-trash
+                      </v-icon>
+                    </template>
+                  </v-data-table>
                 </v-col>
               </v-row>
             </v-window-item>
@@ -393,11 +584,11 @@ async function addReceipt() {
         </v-card-text>
       </v-card>
     </v-col>
-    <!-- 新增类别 -->
+    <!-- 新增收货单 -->
     <v-dialog v-model="addDialog" min-width="400px" width="560px">
       <v-card>
         <v-toolbar color="blue">
-          <v-toolbar-title> 新增类别 </v-toolbar-title>
+          <v-toolbar-title> 新增收货单 </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon @click="addDialog = false">
             <v-icon>fa-solid fa-close</v-icon>
@@ -405,6 +596,16 @@ async function addReceipt() {
         </v-toolbar>
         <v-card-text class="mt-4">
           <v-row>
+            <v-col cols="12">
+              <v-text-field
+                label="收货单号"
+                v-model="inventoryInfo.receipt_number"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
             <v-col cols="12">
               <v-text-field
                 label="物料名"
@@ -472,11 +673,11 @@ async function addReceipt() {
         </div>
       </v-card>
     </v-dialog>
-    <!-- 修改类别 -->
+    <!-- 修改收货单 -->
     <v-dialog v-model="editDialog" min-width="400px" width="560px">
       <v-card>
         <v-toolbar color="blue">
-          <v-toolbar-title> 修改类别 </v-toolbar-title>
+          <v-toolbar-title> 修改收货单 </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-btn icon @click="editDialog = false">
             <v-icon>fa-solid fa-close</v-icon>
@@ -486,8 +687,8 @@ async function addReceipt() {
           <v-row>
             <v-col cols="12">
               <v-text-field
-                label="商品类型名称"
-                v-model="productInfo.categoryname"
+                label="收货单号"
+                v-model="inventoryInfo.receipt_number"
                 variant="outlined"
                 density="compact"
                 hide-details
@@ -496,8 +697,48 @@ async function addReceipt() {
             </v-col>
             <v-col cols="12">
               <v-text-field
-                label="商品类型父级id"
-                v-model="productInfo.pid"
+                label="物料名"
+                v-model="inventoryInfo.sku"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12">
+              <v-text-field
+                label="物料规格"
+                v-model="inventoryInfo.sku_desc"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="6">
+              <v-text-field
+                label="物料数量"
+                v-model="inventoryInfo.sku_qty"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="6">
+              <v-text-field
+                label="单位"
+                v-model="inventoryInfo.unit_of_measure"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12">
+              <v-text-field
+                label="物料描述"
+                v-model="inventoryInfo.sku_spec"
                 variant="outlined"
                 density="compact"
                 hide-details
@@ -511,7 +752,7 @@ async function addReceipt() {
             color="blue-darken-2"
             size="large"
             class="mr-2"
-            @click="editSation()"
+            @click="editReceipt()"
           >
             确认
           </v-btn>
@@ -521,7 +762,7 @@ async function addReceipt() {
         </div>
       </v-card>
     </v-dialog>
-    <!-- 删除类别 -->
+    <!-- 删除收货单 -->
     <v-dialog v-model="delDialog" min-width="400px" width="560px">
       <v-card>
         <v-toolbar color="blue">
@@ -537,11 +778,149 @@ async function addReceipt() {
             color="blue-darken-2"
             size="large"
             class="mr-2"
-            @click="delSation()"
+            @click="delReceipt"
           >
             确认
           </v-btn>
           <v-btn color="grey" size="large" @click="delDialog = false">
+            取消
+          </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
+    <!-- 审核收货单 -->
+    <v-dialog v-model="auditDialog" min-width="400px" width="560px">
+      <v-card>
+        <v-toolbar color="blue">
+          <v-toolbar-title> 审核收货单 </v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="auditDialog = false">
+            <v-icon>fa-solid fa-close</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <v-card-text class="mt-4">
+          <v-row>
+            <v-col cols="12">
+              <v-text-field
+                label="收货单号"
+                readonly
+                v-model="inventoryInfo.receipt_number"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12">
+              <v-text-field
+                label="物料名"
+                readonly
+                v-model="inventoryInfo.sku"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12">
+              <v-text-field
+                label="物料规格"
+                readonly
+                v-model="inventoryInfo.sku_desc"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="6">
+              <v-text-field
+                label="物料数量"
+                readonly
+                v-model="inventoryInfo.sku_qty"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="6">
+              <v-text-field
+                label="单位"
+                readonly
+                v-model="inventoryInfo.unit_of_measure"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12">
+              <v-text-field
+                label="物料描述"
+                readonly
+                v-model="inventoryInfo.sku_spec"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <div class="d-flex justify-end mr-6 mb-4">
+          <v-btn
+            color="blue-darken-2"
+            size="large"
+            class="mr-2"
+            @click="auditReceipt()"
+          >
+            确认
+          </v-btn>
+          <v-btn color="grey" size="large" @click="auditDialog = false">
+            取消
+          </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
+    <!-- 组盘入库 -->
+    <v-dialog v-model="groupDialog" min-width="400px" width="560px">
+      <v-card>
+        <v-toolbar color="blue">
+          <v-toolbar-title> 组盘入库 </v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="groupDialog = false">
+            <v-icon>fa-solid fa-close</v-icon>
+          </v-btn>
+        </v-toolbar>
+        <v-card-text>
+          <v-text-field
+            label="库位"
+            v-model="placeCode"
+            variant="outlined"
+            density="compact"
+            hide-details
+            class="mt-2"
+          ></v-text-field>
+          <v-text-field
+            label="容器编号"
+            v-model="containerId"
+            variant="outlined"
+            density="compact"
+            hide-details
+            class="mt-2"
+          ></v-text-field>
+        </v-card-text>
+        <div class="d-flex justify-end mr-6 mb-4">
+          <v-btn
+            color="blue-darken-2"
+            size="large"
+            class="mr-2"
+            @click="groupShelves"
+          >
+            确认
+          </v-btn>
+          <v-btn color="grey" size="large" @click="groupDialog = false">
             取消
           </v-btn>
         </div>
