@@ -36,10 +36,274 @@ let tab = ref("one");
         </v-tabs>
         <v-card-text>
           <v-window v-model="tab">
-            <v-window-item value="one">出库清单</v-window-item>
-            <v-window-item value="two">拣货打包</v-window-item>
-            <v-window-item value="three">发货出库</v-window-item>
-            <v-window-item value="four">发货单</v-window-item>
+            <v-window-item value="one">
+              <v-row>
+                <v-col cols="4">
+                   <v-text-field
+                    label="商品名称"
+                    v-model="searchMerchandiseName"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="4">
+                   <v-text-field
+                    label="商品名称"
+                    v-model="searchMerchandiseName"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="4">
+                   <v-text-field
+                    label="商品名称"
+                    v-model="searchMerchandiseName"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-btn
+                    color="blue-darken-2"
+                    class="mr-2 mt-2"
+                    size="default"
+                    @click="filter"
+                    >搜索</v-btn
+                  >
+                  <v-btn
+                    color="red"
+                    class="mr-2 mt-2"
+                    size="default"
+                    @click="resetFilter"
+                    >重置搜索</v-btn
+                  >
+                  <v-btn
+                    color="blue-darken-2"
+                    class="mr-2 mt-2"
+                    size="default"
+                    @click="resetFilter"
+                    >新增收货单</v-btn
+                  >
+                </v-col>
+                <v-col cols="12">
+                  <v-data-table
+                    hover
+                    :items-per-page="10"
+                    :headers="headers"
+                    :items="inventoryList"
+                    style="overflow-x: auto; white-space: nowrap"
+                    fixed-footer
+                    fixed-header
+                    height="610"
+                    no-data-text="没有找到符合的数据"
+                  ></v-data-table>
+                </v-col>
+              </v-row>
+            </v-window-item>
+            <v-window-item value="two">
+              <v-row>
+                <v-col cols="4">
+                   <v-text-field
+                    label="商品名称"
+                    v-model="searchMerchandiseName"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="4">
+                   <v-text-field
+                    label="商品名称"
+                    v-model="searchMerchandiseName"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="4">
+                   <v-text-field
+                    label="商品名称"
+                    v-model="searchMerchandiseName"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-btn
+                    color="blue-darken-2"
+                    class="mr-2 mt-2"
+                    size="default"
+                    @click="filter"
+                    >搜索</v-btn
+                  >
+                  <v-btn
+                    color="red"
+                    class="mr-2 mt-2"
+                    size="default"
+                    @click="resetFilter"
+                    >重置搜索</v-btn
+                  >
+                  <v-btn
+                    color="blue-darken-2"
+                    class="mr-2 mt-2"
+                    size="default"
+                    @click="resetFilter"
+                    >新增收货单</v-btn
+                  >
+                </v-col>
+                <v-col cols="12">
+                  <v-data-table
+                    hover
+                    :items-per-page="10"
+                    :headers="headers"
+                    :items="inventoryList"
+                    style="overflow-x: auto; white-space: nowrap"
+                    fixed-footer
+                    fixed-header
+                    height="610"
+                    no-data-text="没有找到符合的数据"
+                  ></v-data-table>
+                </v-col>
+              </v-row>
+            </v-window-item>
+            <v-window-item value="three">
+              <v-row>
+                <v-col cols="4">
+                   <v-text-field
+                    label="商品名称"
+                    v-model="searchMerchandiseName"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="4">
+                   <v-text-field
+                    label="商品名称"
+                    v-model="searchMerchandiseName"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="4">
+                   <v-text-field
+                    label="商品名称"
+                    v-model="searchMerchandiseName"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-btn
+                    color="blue-darken-2"
+                    class="mr-2 mt-2"
+                    size="default"
+                    @click="filter"
+                    >搜索</v-btn
+                  >
+                  <v-btn
+                    color="red"
+                    class="mr-2 mt-2"
+                    size="default"
+                    @click="resetFilter"
+                    >重置搜索</v-btn
+                  >
+                  <v-btn
+                    color="blue-darken-2"
+                    class="mr-2 mt-2"
+                    size="default"
+                    @click="resetFilter"
+                    >新增收货单</v-btn
+                  >
+                </v-col>
+                <v-col cols="12">
+                  <v-data-table
+                    hover
+                    :items-per-page="10"
+                    :headers="headers"
+                    :items="inventoryList"
+                    style="overflow-x: auto; white-space: nowrap"
+                    fixed-footer
+                    fixed-header
+                    height="610"
+                    no-data-text="没有找到符合的数据"
+                  ></v-data-table>
+                </v-col>
+              </v-row>
+            </v-window-item>
+            <v-window-item value="four">
+              <v-row>
+                <v-col cols="4">
+                   <v-text-field
+                    label="商品名称"
+                    v-model="searchMerchandiseName"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="4">
+                   <v-text-field
+                    label="商品名称"
+                    v-model="searchMerchandiseName"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="4">
+                   <v-text-field
+                    label="商品名称"
+                    v-model="searchMerchandiseName"
+                    variant="outlined"
+                    density="compact"
+                    hide-details
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-btn
+                    color="blue-darken-2"
+                    class="mr-2 mt-2"
+                    size="default"
+                    @click="filter"
+                    >搜索</v-btn
+                  >
+                  <v-btn
+                    color="red"
+                    class="mr-2 mt-2"
+                    size="default"
+                    @click="resetFilter"
+                    >重置搜索</v-btn
+                  >
+                  <v-btn
+                    color="blue-darken-2"
+                    class="mr-2 mt-2"
+                    size="default"
+                    @click="resetFilter"
+                    >新增收货单</v-btn
+                  >
+                </v-col>
+                <v-col cols="12">
+                  <v-data-table
+                    hover
+                    :items-per-page="10"
+                    :headers="headers"
+                    :items="inventoryList"
+                    style="overflow-x: auto; white-space: nowrap"
+                    fixed-footer
+                    fixed-header
+                    height="610"
+                    no-data-text="没有找到符合的数据"
+                  ></v-data-table>
+                </v-col>
+              </v-row>
+            </v-window-item>
           </v-window>
         </v-card-text>
       </v-card>

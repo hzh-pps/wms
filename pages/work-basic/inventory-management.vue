@@ -5,9 +5,9 @@ useSeoMeta({
   // 社交媒体分享该页面时显示的标题
   ogTitle: "库存管理",
   // 该页面的描述
-  description: "同日 MES 系统，库存管理",
+  description: "同日云联 WMS 系统，库存管理",
   // 社交媒体分享该页面时显示的描述
-  ogDescription: "同日 MES 系统，库存管理",
+  ogDescription: "同日云联 WMS 系统，库存管理",
   // 社交媒体分享该页面时显示的图片
   ogImage: "/同日图标.png",
 });
@@ -16,17 +16,17 @@ definePageMeta({
   keepalive: true,
 });
 //搜索
-let searchCtnId = ref<any>(null);
-let searchPlaceId = ref<any>(null);
-let searchWarehouse = ref<any>(null);
-let searchArea = ref<any>(null);
-let searchMaterial = ref<any>(null);
-let searchMaterialDesc = ref<any>(null);
-let searchInDateTo = ref<any>(null);
-let searchInDateFrom = ref<any>(null);
-let searchLot = ref<any>(null);
-let searchReserve = ref<any>(null);
-let searchSkuSpec = ref<any>(null);
+let searchCtnId = ref<any>("");
+let searchPlaceId = ref<any>("");
+let searchWarehouse = ref<any>("");
+let searchArea = ref<any>("");
+let searchMaterial = ref<any>("");
+let searchMaterialDesc = ref<any>("");
+let searchInDateTo = ref<any>("");
+let searchInDateFrom = ref<any>("");
+let searchLot = ref<any>("");
+let searchReserve = ref<any>("");
+let searchSkuSpec = ref<any>("");
 //表头
 let headers = ref<any[]>([
   {
@@ -163,24 +163,21 @@ let headers = ref<any[]>([
 let inventoryList = ref<any[]>([]);
 //获取数据库数据
 async function getInventoryData() {
-  const data: any = await useHttp(
-    "/wmsInventory/G115condition_query",
-    "post",
-
-    {
-      container_id: searchCtnId.value,
-      place_code: searchPlaceId.value,
-      warehouse_code: searchWarehouse.value,
-      area_code: searchArea.value,
-      sku: searchMaterial.value,
-      sku_desc: searchMaterialDesc.value,
-      indateTo: searchInDateTo.value,
-      indateFrom: searchInDateFrom.value,
-      lot: searchLot.value,
-      reserved01: searchReserve.value,
-      sku_spec: searchSkuSpec.value,
-    }
-  );
+  // 使用 Strapi 的过滤语法构建查询参数
+  const queryParams = new URLSearchParams({
+    "filters[container_id][$containsi]": searchCtnId.value,
+    "filters[place_code][$containsi]": searchPlaceId.value,
+    "filters[warehouse_code][$containsi]": searchWarehouse.value,
+    "filters[area_code][$containsi]": searchArea.value,
+    "filters[sku][$containsi]": searchMaterial.value,
+    "filters[sku_desc][$containsi]": searchMaterialDesc.value,
+    "filters[indateTo][$containsi]": searchInDateTo.value,
+    "filters[indateFrom][$containsi]": searchInDateFrom.value,
+    "filters[lot][$containsi]": searchLot.value,
+    "filters[reserved01][$containsi]": searchReserve.value,
+    "filters[sku_spec][$containsi]": searchSkuSpec.value,
+  }).toString();
+  const data: any = await useHttp(`/wms-inventories?${queryParams}`, "get");
   inventoryList.value = data.data.map((item: any) => {
     item.time_in = item.time_in.substring(0, 10);
     item.time_out = item.time_out.substring(0, 10);
