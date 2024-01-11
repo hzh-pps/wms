@@ -164,7 +164,6 @@ async function delSation() {
         class="mt-2"
       ></v-text-field>
     </v-col>
-
     <v-col cols="12">
       <v-btn
         color="blue-darken-2"
