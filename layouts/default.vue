@@ -9,7 +9,7 @@ const name = useCookie("name");
 const userMenus = ref<any[]>([
   {
     name: "个人信息",
-    path: "/auth/personal-information",
+
     icon: "fa-solid fa-user",
   },
   {
@@ -19,12 +19,12 @@ const userMenus = ref<any[]>([
   },
   {
     name: "系统设置",
-    path: "/auth/system-setting",
+
     icon: "fa-solid fa-gear",
   },
   {
     name: "常见问题",
-    path: "/auth/FAQ",
+
     icon: "fa-solid fa-circle-question",
   },
 ]);

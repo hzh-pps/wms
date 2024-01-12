@@ -49,32 +49,32 @@ const passwordRule = ref<any[]>([
 
 // 修改密码
 async function updatePasswordSubmit() {
-  if (!updatePasswordFormValid.value) return;
+  // if (!updatePasswordFormValid.value) return;
 
-  // 密码加密
-  const md5OldPassword = useMd5(oldPassword.value);
-  const md5NewPassword = useMd5(newPassword.value);
+  // // 密码加密
+  // const md5OldPassword = useMd5(oldPassword.value);
+  // const md5NewPassword = useMd5(newPassword.value);
 
-  // 发送忘记密码的请求
-  const data: any = await useHttp("/Account/A07ChangePassword", "put", {
-    old_passwd_md5: md5OldPassword,
-    new_passwd_md5: md5NewPassword,
-  });
+  // // 发送忘记密码的请求
+  // const data: any = await useHttp("/Account/A07ChangePassword", "put", {
+  //   old_passwd_md5: md5OldPassword,
+  //   new_passwd_md5: md5NewPassword,
+  // });
 
-  // 处理错误
-  if (data.code === 500) return setSnackbar("black", "修改失败，旧密码错误");
+  // // 处理错误
+  // if (data.code === 500) return setSnackbar("black", "修改失败，旧密码错误");
 
-  // 储存 Cookie
-  useCookie("password").value = newPassword.value;
-  useCookie("token").value = data.token;
-  useCookie("refreshToken").value = data.refresh_token;
+  // // 储存 Cookie
+  // useCookie("password").value = newPassword.value;
+  // useCookie("token").value = data.token;
+  // useCookie("refreshToken").value = data.refresh_token;
 
-  // 修改密码成功
+  // // 修改密码成功
   setSnackbar("green", "修改密码成功");
 
   setTimeout(function () {
     router.push({ path: "/home" });
-  }, 1500);
+  }, 1000);
 }
 
 // 函数防抖

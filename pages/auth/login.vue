@@ -196,9 +196,10 @@ const debouncePasswordLogin = useDebounce(passwordLogin, 1000);
                 <div @click="router.push({ path: '/auth/register' })">
                   没有账号？去注册
                 </div>
-                <div @click="router.push({ path: '/auth/forget-password' })">
+                <!-- <div @click="router.push({ path: '/auth/forget-password' })">
                   忘记密码
-                </div>
+                </div> -->
+                <div>忘记密码</div>
               </div>
             </v-form>
           </v-card-text>

@@ -26,8 +26,8 @@ export default defineNuxtConfig({
   // 配置默认请求地址
   runtimeConfig: {
     public: {
-      // apiBase: "http://10.0.20.250:1337/api",
-      apiBase: "http://223.68.159.190:21337/api",
+      apiBase: "http://10.0.20.250:1337/api",
+      // apiBase: "http://223.68.159.190:21337/api",
     },
   },
   // 类型检查、严格模式是否启用
