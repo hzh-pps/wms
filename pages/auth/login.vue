@@ -110,12 +110,12 @@ async function getList() {
   const menuList: any = [];
   data2.data.forEach((item: any) => {
     menuList.push({
-      icon: item.attributes.icon_name,
+      icon: item.icon_name,
       id: item.id,
-      name: item.attributes.permission_title,
-      path: item.attributes.page_url,
-      pid: item.attributes.parent_id,
-      sort_node: item.attributes.sort_node,
+      name: item.permission_title,
+      path: item.page_url,
+      pid: item.parent_id,
+      sort_node: item.sort_node,
       show: true,
     });
   });
