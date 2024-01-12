@@ -186,7 +186,7 @@ function showUpdate(item: any) {
 //保存修改
 async function editCertain() {
   const index = users.value.findIndex(
-    (item) => item.user_name === userInfo.value.user_name
+    (item) => item.cell_phone === userInfo.value.cell_phone
   );
   if (index !== -1) {
     users.value[index] = { ...userInfo.value };
@@ -273,18 +273,19 @@ let roleList = ref<any[]>([
 //分配角色
 function showAssign(item: any) {
   userInfo.value = { ...item };
-
   assignDialog.value = true;
 }
 
 //保存分配
 function saveAssign() {
   const index = users.value.findIndex(
-    (item) => item.user_name === userInfo.value.user_name
+    (item) => item.cell_phone === userInfo.value.cell_phone
   );
+
   if (index !== -1) {
-    users.value[index].roleids = roles.value.join(",");
+    users.value[index].rolenames = roles.value.join(",");
   }
+  console.log(roles.value);
   assignDialog.value = false;
 }
 </script>
