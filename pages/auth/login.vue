@@ -109,15 +109,17 @@ async function getList() {
   const data2: any = await useHttp("/wms-permissions", "get");
   const menuList: any = [];
   data2.data.forEach((item: any) => {
-    menuList.push({
-      icon: item.icon_name,
-      id: item.id,
-      name: item.permission_title,
-      path: item.page_url,
-      pid: item.parent_id,
-      sort_node: item.sort_node,
-      show: true,
-    });
+    if (item.id !== 3) {
+      menuList.push({
+        icon: item.icon_name,
+        id: item.id,
+        name: item.permission_title,
+        path: item.page_url,
+        pid: item.parent_id,
+        sort_node: item.sort_node,
+        show: true,
+      });
+    }
   });
   menuList.sort((a: any, b: any) => a.sort_node - b.sort_node);
   useCookieSplit("menuList", 5, menuList);

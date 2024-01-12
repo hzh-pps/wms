@@ -12,6 +12,9 @@ useSeoMeta({
   // 社交媒体分享该页面时显示的图片
   ogImage: "/同日图标.png",
 });
+// 获取消息条对象
+const { snackbarShow, snackbarColor, snackbarText, setSnackbar } =
+  useSnackbar();
 let tab = ref("one");
 function showIn() {
   status.value = "新建";
@@ -174,6 +177,7 @@ async function addReceipt() {
   });
   getInventoryList();
   addDialog.value = false;
+  setSnackbar("green", "新增成功");
 }
 // 修改收货单
 function showEditDialog(item: any) {
@@ -191,6 +195,7 @@ async function editReceipt() {
   );
   getInventoryList();
   editDialog.value = false;
+  setSnackbar("green", "修改成功");
 }
 // 删除收货单
 function showDelDialog(item: any) {
@@ -205,6 +210,7 @@ async function delReceipt() {
   );
   getInventoryList();
   delDialog.value = false;
+  setSnackbar("green", "删除成功");
 }
 // 审核
 function showAuditDialog(item: any) {
@@ -221,6 +227,7 @@ async function auditReceipt() {
   );
   getInventoryList();
   auditDialog.value = false;
+  setSnackbar("green", "审核成功");
 }
 // 组盘页面
 function showShelves() {
@@ -251,6 +258,7 @@ async function groupShelves() {
   selected.value = [];
   groupDialog.value = false;
   getInventoryList();
+  setSnackbar("green", "组盘成功");
 }
 
 // 入库记录
@@ -268,15 +276,21 @@ function showInbound() {
       <v-card>
         <v-tabs v-model="tab">
           <v-tab value="one" @click="showIn">
-            <v-icon class="mr-2 mt-1">fa-solid fa-circle-exclamation</v-icon>
+            <v-icon class="mr-2 mt-1" color="blue-darken-2"
+              >fa-solid fa-circle-exclamation</v-icon
+            >
             收货制单</v-tab
           >
           <v-tab value="two" @click="showShelves">
-            <v-icon class="mr-2 mt-1">fa-solid fa-layer-group</v-icon>组盘上架
+            <v-icon class="mr-2 mt-1" color="blue-darken-2"
+              >fa-solid fa-layer-group</v-icon
+            >组盘上架
           </v-tab>
 
           <v-tab value="three" @click="showInbound">
-            <v-icon class="mr-2 mt-1">fa-solid fa-mobile</v-icon>入库记录</v-tab
+            <v-icon class="mr-2 mt-1" color="blue-darken-2"
+              >fa-solid fa-mobile</v-icon
+            >入库记录</v-tab
           >
         </v-tabs>
         <v-card-text>
@@ -921,4 +935,10 @@ function showInbound() {
       </v-card>
     </v-dialog>
   </v-row>
+  <v-snackbar location="top" v-model="snackbarShow" :color="snackbarColor">
+    {{ snackbarText }}
+    <template v-slot:actions>
+      <v-btn variant="tonal" @click="snackbarShow = false">关闭</v-btn>
+    </template>
+  </v-snackbar>
 </template>

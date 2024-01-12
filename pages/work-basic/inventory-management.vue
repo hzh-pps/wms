@@ -66,9 +66,9 @@ let headers = ref<any[]>([
     filterable: true,
   },
   {
-    title: "项目编号",
+    title: "库区",
     align: "center",
-    key: "reserved01",
+    key: "area_code",
     sortable: false,
     filterable: true,
   },
@@ -171,10 +171,7 @@ async function getInventoryData() {
     "filters[area_code][$containsi]": searchArea.value,
     "filters[sku][$containsi]": searchMaterial.value,
     "filters[sku_desc][$containsi]": searchMaterialDesc.value,
-    "filters[indateTo][$containsi]": searchInDateTo.value,
-    "filters[indateFrom][$containsi]": searchInDateFrom.value,
     "filters[lot][$containsi]": searchLot.value,
-    "filters[reserved01][$containsi]": searchReserve.value,
     "filters[sku_spec][$containsi]": searchSkuSpec.value,
   }).toString();
   const data: any = await useHttp(`/wms-inventories?${queryParams}`, "get");
@@ -261,16 +258,7 @@ function resetFilter() {
         class="mt-2"
       ></v-text-field>
     </v-col>
-    <v-col cols="2">
-      <v-text-field
-        label="项目编号"
-        v-model="searchReserve"
-        variant="outlined"
-        density="compact"
-        hide-details
-        class="mt-2"
-      ></v-text-field>
-    </v-col>
+
     <v-col cols="2">
       <v-text-field
         label="库存批次"
@@ -303,28 +291,6 @@ function resetFilter() {
       ></v-select>
     </v-col>
 
-    <v-col cols="2">
-      <v-text-field
-        label="最早入库时间"
-        v-model="searchInDateTo"
-        variant="outlined"
-        density="compact"
-        hide-details
-        class="mt-2"
-        type="date"
-      ></v-text-field>
-    </v-col>
-    <v-col cols="2">
-      <v-text-field
-        label="最晚入库时间"
-        v-model="searchInDateFrom"
-        variant="outlined"
-        density="compact"
-        hide-details
-        class="mt-2"
-        type="date"
-      ></v-text-field>
-    </v-col>
     <v-col cols="12">
       <v-btn
         color="blue-darken-2"

@@ -118,41 +118,164 @@ let headers = ref<any[]>([
     filterable: true,
   },
 ]);
-//多选内容
-let selected = ref<any[]>([]);
-let wareHouseList = ref<any[]>([]);
+
+let wareHouseList = ref<any[]>([
+  {
+    warehouse: "A",
+    place_type: "平面库",
+    place_code: "A01-01-01",
+    place_desc: "A仓库1区1排1列",
+    area_code: "01",
+    container_id: "C001",
+    occupy_order: "O-00001",
+    default_sku: "SKU001",
+    is_empty: "Y",
+    flag_has_task: "N",
+    disable: "否",
+  },
+  {
+    warehouse: "B",
+    place_type: "立体库",
+    place_code: "B02-02-02",
+    place_desc: "B仓库2区2排2列",
+    area_code: "02",
+    container_id: "C002",
+    occupy_order: "O-00002",
+    default_sku: "SKU002",
+    is_empty: "N",
+    flag_has_task: "Y",
+    disable: "是",
+  },
+  {
+    warehouse: "C",
+    place_type: "冷藏库",
+    place_code: "C03-03-03",
+    place_desc: "C仓库3区3排3列",
+    area_code: "03",
+    container_id: "C003",
+    occupy_order: "O-00003",
+    default_sku: "SKU003",
+    is_empty: "Y",
+    flag_has_task: "N",
+    disable: "否",
+  },
+  {
+    warehouse: "D",
+    place_type: "危险品库",
+    place_code: "D04-04-04",
+    place_desc: "D仓库4区4排4列",
+    area_code: "04",
+    container_id: "C004",
+    occupy_order: "O-00004",
+    default_sku: "SKU004",
+    is_empty: "N",
+    flag_has_task: "Y",
+    disable: "是",
+  },
+  {
+    warehouse: "E",
+    place_type: "平面库",
+    place_code: "E05-05-05",
+    place_desc: "E仓库5区5排5列",
+    area_code: "05",
+    container_id: "C005",
+    occupy_order: "O-00005",
+    default_sku: "SKU005",
+    is_empty: "Y",
+    flag_has_task: "N",
+    disable: "否",
+  },
+  {
+    warehouse: "F",
+    place_type: "立体库",
+    place_code: "F06-06-06",
+    place_desc: "F仓库6区6排6列",
+    area_code: "06",
+    container_id: "C006",
+    occupy_order: "O-00006",
+    default_sku: "SKU006",
+    is_empty: "N",
+    flag_has_task: "Y",
+    disable: "是",
+  },
+  {
+    warehouse: "G",
+    place_type: "临时库",
+    place_code: "G07-07-07",
+    place_desc: "G仓库7区7排7列",
+    area_code: "07",
+    container_id: "C007",
+    occupy_order: "O-00007",
+    default_sku: "SKU007",
+    is_empty: "Y",
+    flag_has_task: "N",
+    disable: "否",
+  },
+  {
+    warehouse: "H",
+    place_type: "冷藏库",
+    place_code: "H08-08-08",
+    place_desc: "H仓库8区8排8列",
+    area_code: "08",
+    container_id: "C008",
+    occupy_order: "O-00008",
+    default_sku: "SKU008",
+    is_empty: "N",
+    flag_has_task: "Y",
+    disable: "是",
+  },
+  {
+    warehouse: "I",
+    place_type: "危险品库",
+    place_code: "I09-09-09",
+    place_desc: "I仓库9区9排9列",
+    area_code: "09",
+    container_id: "C009",
+    occupy_order: "O-00009",
+    default_sku: "SKU009",
+    is_empty: "Y",
+    flag_has_task: "N",
+    disable: "否",
+  },
+  {
+    warehouse: "J",
+    place_type: "平面库",
+    place_code: "J10-10-10",
+    place_desc: "J仓库10区10排10列",
+    area_code: "10",
+    container_id: "C010",
+    occupy_order: "O-00010",
+    default_sku: "SKU010",
+    is_empty: "N",
+    flag_has_task: "Y",
+    disable: "是",
+  },
+]);
+
+let wareHouseList2 = ref<any[]>([]);
 //获取数据库内的数据
-async function getWareHouseDate() {
-  const data: any = await useHttp("/wmsPlace/G100placeid", "get", undefined, {
-    place_id: "",
-    warehouse: searchWarehouse.value,
-    place_code: searchPlaceCode.value,
-    place_desc: searchPlaceDesc.value,
-    area_code: searchAreaCode.value,
-    container_id: searchContainer.value,
-    is_empty:
-      searchIsEmpty.value === "是"
-        ? "Y"
-        : searchIsEmpty.value === "否"
-        ? "N"
-        : "",
-    flag_has_task:
-      searchFlag.value === "是" ? "Y" : searchFlag.value === "否" ? "N" : "",
-    default_sku: searchDefaultSku.value,
-    occupy_order: searchOccupy.value,
-    place_type: searchPlaceType.value,
-    disable:
-      searchDisable.value === "是"
-        ? true
-        : searchDisable.value === "否"
-        ? "false"
-        : "",
-  });
-  wareHouseList.value = data.data.map((item: any) => {
-    item.is_empty = item.is_empty === "Y" ? "是" : "否";
-    item.flag_has_task = item.flag_has_task === "Y" ? "是" : "否";
-    item.disable = item.disable === false ? "否" : "是";
-    return item;
+function getWareHouseDate() {
+  wareHouseList2.value = filterWareHouseList();
+}
+function filterWareHouseList() {
+  return wareHouseList.value.filter((item) => {
+    return (
+      (!searchWarehouse.value ||
+        item.warehouse.includes(searchWarehouse.value)) &&
+      (!searchPlaceCode.value ||
+        item.place_code.includes(searchPlaceCode.value)) &&
+      (!searchPlaceDesc.value ||
+        item.place_desc.includes(searchPlaceDesc.value)) &&
+      (!searchAreaCode.value ||
+        item.area_code.includes(searchAreaCode.value)) &&
+      (!searchContainer.value ||
+        item.container_id.includes(searchContainer.value)) &&
+      (!searchDefaultSku.value ||
+        item.default_sku.includes(searchDefaultSku.value)) &&
+      (!searchOccupy.value || item.occupy_order.includes(searchOccupy.value)) &&
+      (!searchPlaceType.value ||
+        item.place_type.includes(searchPlaceType.value))
+    );
   });
 }
 //页面加载时,获取数据
@@ -210,8 +333,8 @@ function showAddDialog() {
     lenth: 0,
     occupy_order: "",
     default_sku: "",
-    flag_has_task: "",
-    is_empty: "",
+    flag_has_task: "N",
+    is_empty: "Y",
     container_id: "",
     area_code: "",
     place_desc: "",
@@ -219,7 +342,7 @@ function showAddDialog() {
     warehouse: "",
     max_weight: "",
     place_type: "",
-    disable: false,
+    disable: "否",
     reserved01: "",
     org_tag: "",
     reserved03: "",
@@ -244,43 +367,18 @@ function importName() {
 }
 //确认新增
 async function addSation() {
-  const data: any = await useHttp("/wmsPlace/G102newone", "post", {
-    num_cloumn: stationInfo.value.num_cloumn,
-    num_layer: stationInfo.value.num_layer,
-    num_row: stationInfo.value.num_row,
-    height: stationInfo.value.height,
-    width: stationInfo.value.width,
-    lenth: stationInfo.value.lenth,
-    occupy_order: "",
-    default_sku: stationInfo.value.default_sku,
-    flag_has_task: "N",
-    is_empty: "Y",
-    container_id: "",
-    area_code: stationInfo.value.area_code,
-    place_desc: stationInfo.value.place_desc,
-    place_code: convertFormat(
-      stationInfo.value.warehouse,
-      stationInfo.value.area_code,
-      stationInfo.value.num_row.toString(),
-      stationInfo.value.num_cloumn.toString(),
-      stationInfo.value.num_layer.toString()
-    ),
-    warehouse: stationInfo.value.warehouse,
-    max_weight: 0,
-    place_type: stationInfo.value.place_type,
-    disable: false,
-    reserved01: "",
-    org_tag: "",
-    reserved03: "",
-    reserved02: "",
-  });
-  if (data.code === 200) {
-    setSnackbar("blue", "新增成功");
-    getWareHouseDate();
-    addDialog.value = false;
-  } else {
-    return setSnackbar("black", "新增失败");
-  }
+  stationInfo.value.place_code = convertFormat(
+    stationInfo.value.warehouse,
+    stationInfo.value.area_code,
+    stationInfo.value.num_row.toString(),
+    stationInfo.value.num_cloumn.toString(),
+    stationInfo.value.num_layer.toString()
+  );
+  wareHouseList.value.push(stationInfo.value);
+
+  addDialog.value = false;
+  getWareHouseDate();
+  setSnackbar("blue", "新增成功");
 }
 //打开修改框
 function showEditDialog(item: any) {
@@ -288,44 +386,15 @@ function showEditDialog(item: any) {
   editDialog.value = true;
 }
 async function editSation() {
-  const data: any = await useHttp("/wmsPlace/G103update", "put", {
-    place_id: stationInfo.value.place_id,
-    num_cloumn: stationInfo.value.num_cloumn,
-    num_layer: stationInfo.value.num_layer,
-    num_row: stationInfo.value.num_row,
-    height: stationInfo.value.height,
-    width: stationInfo.value.width,
-    lenth: stationInfo.value.lengh,
-    occupy_order: stationInfo.value.occupy_order,
-    default_sku: stationInfo.value.default_sku,
-    flag_has_task: stationInfo.value.flag_has_task === "是" ? "Y" : "N",
-    is_empty: stationInfo.value.is_empty === "是" ? "Y" : "N",
-    container_id: stationInfo.value.container_id,
-    area_code: stationInfo.value.area_code,
-    place_desc: stationInfo.value.place_desc,
-    place_code: convertFormat(
-      stationInfo.value.warehouse,
-      stationInfo.value.area_code,
-      stationInfo.value.num_row.toString(),
-      stationInfo.value.num_cloumn.toString(),
-      stationInfo.value.num_layer.toString()
-    ),
-    warehouse: stationInfo.value.warehouse,
-    max_weight: stationInfo.value.max_weight,
-    place_type: stationInfo.value.place_type,
-    disable: stationInfo.value.disable === "是" ? true : false,
-    reserved01: stationInfo.value.reserved01,
-    org_tag: stationInfo.value.org_tag,
-    reserved03: stationInfo.value.reserved03,
-    reserved02: stationInfo.value.reserved02,
-  });
-  if (data.code === 200) {
-    setSnackbar("blue", "修改成功");
-    getWareHouseDate();
-    editDialog.value = false;
-  } else {
-    return setSnackbar("black", "修改失败");
+  const index = wareHouseList.value.findIndex(
+    (item) => item.place_id === stationInfo.value.place_id
+  );
+  if (index !== -1) {
+    wareHouseList.value[index] = { ...stationInfo.value };
   }
+  setSnackbar("blue", "修改成功");
+  editDialog.value = false;
+  getWareHouseDate();
 }
 //打开删除弹框
 function showDelDialog(item: any) {
@@ -334,38 +403,20 @@ function showDelDialog(item: any) {
 }
 //确认删除
 async function delSation() {
-  const data: any = await useHttp("/wmsPlace/G104delete", "delete", undefined, {
-    one: stationInfo.value.place_id,
-  });
-  if (data.code === 200) {
-    setSnackbar("blue", "删除成功");
-    getWareHouseDate();
-    delDialog.value = false;
-  } else {
-    return setSnackbar("black", "修改失败");
-  }
-}
-// 二维码实例
-const qrCodeIns = ref<any>(null);
-let dataCode = ref<any[]>([]);
-//打印出二维码
-function printCode() {
-  if (!selected.value.length) {
-    return setSnackbar("black", "请您选择需要打印的派工单");
-  }
-  selected.value.map((item: any) =>
-    dataCode.value.push({
-      value: item.place_code,
-    })
+  const index = wareHouseList.value.findIndex(
+    (item) => item.place_id === stationInfo.value.place_id
   );
-  nextTick(() => {
-    qrCodeIns.value.printQrCode();
-  });
+  if (index !== -1) {
+    wareHouseList.value.splice(index, 1);
+  }
+  setSnackbar("blue", "删除成功");
+  getWareHouseDate();
+  delDialog.value = false;
 }
 </script>
 <template>
   <v-row class="ma-2">
-    <v-col cols="2">
+    <v-col cols="3">
       <v-text-field
         label="库位号"
         v-model="searchPlaceCode"
@@ -375,7 +426,7 @@ function printCode() {
         class="mt-2"
       ></v-text-field>
     </v-col>
-    <v-col cols="2">
+    <v-col cols="3">
       <v-text-field
         label="仓库名称"
         v-model="searchPlaceDesc"
@@ -385,7 +436,7 @@ function printCode() {
         class="mt-2"
       ></v-text-field>
     </v-col>
-    <v-col cols="2">
+    <v-col cols="3">
       <v-text-field
         label="占用单据号"
         v-model="searchOccupy"
@@ -395,7 +446,7 @@ function printCode() {
         class="mt-2"
       ></v-text-field>
     </v-col>
-    <v-col cols="2">
+    <v-col cols="3">
       <v-text-field
         label="库区号"
         v-model="searchAreaCode"
@@ -405,7 +456,7 @@ function printCode() {
         class="mt-2"
       ></v-text-field>
     </v-col>
-    <v-col cols="2">
+    <v-col cols="3">
       <v-text-field
         label="容器号"
         v-model="searchContainer"
@@ -415,7 +466,7 @@ function printCode() {
         class="mt-2"
       ></v-text-field>
     </v-col>
-    <v-col cols="2">
+    <v-col cols="3">
       <v-text-field
         label="默认物料"
         v-model="searchDefaultSku"
@@ -425,7 +476,7 @@ function printCode() {
         class="mt-2"
       ></v-text-field>
     </v-col>
-    <v-col cols="2">
+    <v-col cols="3">
       <v-select
         label="库位类型"
         v-model="searchPlaceType"
@@ -436,7 +487,7 @@ function printCode() {
         class="mt-2"
       ></v-select>
     </v-col>
-    <v-col cols="2">
+    <v-col cols="3">
       <v-select
         label="仓库号"
         v-model="searchWarehouse"
@@ -448,39 +499,6 @@ function printCode() {
       ></v-select>
     </v-col>
 
-    <v-col cols="2">
-      <v-select
-        label="是否有任务"
-        v-model="searchFlag"
-        variant="outlined"
-        :items="['是', '否']"
-        density="compact"
-        hide-details
-        class="mt-2"
-      ></v-select>
-    </v-col>
-    <v-col cols="2">
-      <v-select
-        label="是否为空"
-        v-model="searchIsEmpty"
-        :items="['是', '否']"
-        variant="outlined"
-        density="compact"
-        hide-details
-        class="mt-2"
-      ></v-select>
-    </v-col>
-    <v-col cols="2">
-      <v-select
-        label="是否禁用"
-        v-model="searchDisable"
-        :items="['是', '否']"
-        variant="outlined"
-        density="compact"
-        hide-details
-        class="mt-2"
-      ></v-select>
-    </v-col>
     <v-col cols="12">
       <v-btn
         color="blue-darken-2"
@@ -497,22 +515,9 @@ function printCode() {
         class="mr-2 mt-2"
         size="default"
         @click="showAddDialog"
-        v-permission="`${router.currentRoute.value.fullPath}->addLocation`"
       >
         新增库位
       </v-btn>
-      <v-btn
-        color="blue-darken-2"
-        class="mr-2 mt-2"
-        size="default"
-        @click="printCode"
-        v-permission="
-          `${router.currentRoute.value.fullPath}->printCodeLocation`
-        "
-      >
-        打印
-      </v-btn>
-      <VQRCode2 :data="dataCode" ref="qrCodeIns"></VQRCode2>
     </v-col>
     <v-col>
       <v-data-table
@@ -520,9 +525,6 @@ function printCode() {
         :items-per-page="10"
         :headers="headers"
         :items="wareHouseList"
-        v-model="selected"
-        show-select
-        return-object
         style="overflow-x: auto; white-space: nowrap"
         fixed-footer
         fixed-header
@@ -540,19 +542,11 @@ function printCode() {
             size="small"
             class="mr-3"
             @click="showEditDialog(item.raw)"
-            v-permission="`${router.currentRoute.value.fullPath}->editLocation`"
           >
             fa-solid fa-pen
           </v-icon>
           <!-- 删除 -->
-          <v-icon
-            color="red"
-            size="small"
-            @click="showDelDialog(item.raw)"
-            v-permission="
-              `${router.currentRoute.value.fullPath}->deleteLocation`
-            "
-          >
+          <v-icon color="red" size="small" @click="showDelDialog(item.raw)">
             fa-solid fa-trash
           </v-icon>
         </template>

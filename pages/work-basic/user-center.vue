@@ -7,7 +7,78 @@ let dialogDelete = ref(false);
 let editDialog = ref(false);
 let assignDialog = ref(false);
 //存储用户信息
-let users = ref<any[]>([]);
+let users = ref<any[]>([
+  {
+    cell_phone: "13800000001",
+    user_name: "张三",
+    work_no: "001",
+    rolenames: "管理员",
+    status: true,
+  },
+  {
+    cell_phone: "13800000002",
+    user_name: "李四",
+    work_no: "002",
+    rolenames: "运营",
+    status: false,
+  },
+  {
+    cell_phone: "13800000003",
+    user_name: "王五",
+    work_no: "003",
+    rolenames: "开发者",
+    status: true,
+  },
+  {
+    cell_phone: "13800000004",
+    user_name: "赵六",
+    work_no: "004",
+    rolenames: "测试",
+    status: true,
+  },
+  {
+    cell_phone: "13800000005",
+    user_name: "孙七",
+    work_no: "005",
+    rolenames: "设计师",
+    status: false,
+  },
+  {
+    cell_phone: "13800000006",
+    user_name: "周八",
+    work_no: "006",
+    rolenames: "产品经理",
+    status: true,
+  },
+  {
+    cell_phone: "13800000007",
+    user_name: "吴九",
+    work_no: "007",
+    rolenames: "运维",
+    status: true,
+  },
+  {
+    cell_phone: "13800000008",
+    user_name: "郑十",
+    work_no: "008",
+    rolenames: "HR",
+    status: false,
+  },
+  {
+    cell_phone: "13800000009",
+    user_name: "钱十一",
+    work_no: "009",
+    rolenames: "市场",
+    status: true,
+  },
+  {
+    cell_phone: "13800000010",
+    user_name: "周十二",
+    work_no: "010",
+    rolenames: "销售",
+    status: false,
+  },
+]);
 let headers = ref<any[]>([
   {
     title: "用户手机号",
@@ -54,47 +125,31 @@ let headers = ref<any[]>([
 ]);
 let searchPhoneNum = ref<any>(null);
 let searchName = ref<any>(null);
-//当前页
-let page = ref<number>(1);
-watch(page, function () {
-  getUserData();
-});
-//数据库存储的数据条数
-let pageLength = ref<number>(0);
-//一共有多少页
-let pageCount = computed(() => {
-  return Math.ceil(pageLength.value / 10);
-});
-//获取用户信息
-async function getUserData() {
-  const data: any = await useHttp(
-    "/User/A21GetUserRoleList",
-    "get",
-    undefined,
-    {
-      cell_phone: searchPhoneNum.value,
-      Name: searchName.value,
-      PageIndex: page.value,
-      PageSize: 10,
-      SortedBy: "id",
-      SortType: 0,
-    }
-  );
 
-  users.value = data.data.pageList;
-  pageLength.value = data.data.totalCount;
+let userList = ref<any[]>([]);
+//获取用户信息
+function getUserData() {
+  userList.value = filterUserList();
+}
+
+function filterUserList() {
+  return users.value.filter((item) => {
+    return (
+      (!searchPhoneNum.value ||
+        item.cell_phone.includes(searchPhoneNum.value)) &&
+      (!searchName.value || item.user_name.includes(searchName.value))
+    );
+  });
 }
 onMounted(() => {
   getUserData();
 });
 //查询用户
 function filter() {
-  page.value = 1;
   getUserData();
 }
 //重置查询
 function resetFilter() {
-  page.value = 1;
   searchPhoneNum.value = "";
   searchName.value = "";
   getUserData();
@@ -130,12 +185,12 @@ function showUpdate(item: any) {
 }
 //保存修改
 async function editCertain() {
-  const data: any = await useHttp("/User/A19PutUserInfo", "put", {
-    Uid: userInfo.value.user_id,
-    Status: userInfo.value.status,
-    UName: userInfo.value.user_name,
-    Work_No: userInfo.value.work_no,
-  });
+  const index = users.value.findIndex(
+    (item) => item.user_name === userInfo.value.user_name
+  );
+  if (index !== -1) {
+    users.value[index] = { ...userInfo.value };
+  }
   getUserData();
   editDialog.value = false;
 }
@@ -146,51 +201,90 @@ function showDelete(item: any) {
 }
 //确认删除
 async function deleteCertain() {
-  const data: any = await useHttp("/User/A20DelUser", "delete", undefined, {
-    ids: userInfo.value.user_id,
-  });
+  const index = users.value.findIndex(
+    (item) => item.user_name === userInfo.value.user_name
+  );
+  if (index !== -1) {
+    users.value.splice(index, 1);
+  }
   getUserData();
   dialogDelete.value = false;
 }
 //禁用用户
 async function disableUser(item: any) {
-  item.status = !item.status;
-  const data: any = await useHttp("/User/A19PutUserInfo", "put", {
-    Uid: item.user_id,
-    Status: item.status,
-    UName: item.user_name,
-    Work_No: item.work_no,
-  });
-  getUserData();
-  editDialog.value = false;
+  console.log(item);
 }
 //已选的角色
 let roles = ref<any[]>([]);
 //存储数据库里面的所有角色数据
-let roleList = ref<any[]>([]);
-async function getRoleData() {
-  const data: any = await useHttp(
-    "/RolePermissions/A10GetRoleDate",
-    "get",
-    undefined
-  );
-  roleList.value = data.data.filter((item: any) => item.status === true);
-}
+let roleList = ref<any[]>([
+  {
+    role_name: "管理员",
+    role_text: "管理系统所有功能",
+    status: true,
+  },
+  {
+    role_name: "编辑",
+    role_text: "负责内容的创建和编辑",
+    status: true,
+  },
+  {
+    role_name: "审核员",
+    role_text: "审核内容是否符合发布标准",
+    status: false,
+  },
+  {
+    role_name: "游客",
+    role_text: "可以浏览内容，无法进行编辑和评论",
+    status: true,
+  },
+  {
+    role_name: "运营",
+    role_text: "负责网站内容和用户管理",
+    status: true,
+  },
+  {
+    role_name: "开发者",
+    role_text: "负责系统的开发和维护",
+    status: true,
+  },
+  {
+    role_name: "测试员",
+    role_text: "对系统功能进行测试",
+    status: true,
+  },
+  {
+    role_name: "市场",
+    role_text: "负责市场推广和广告运营",
+    status: true,
+  },
+  {
+    role_name: "客服",
+    role_text: "解答用户咨询，提供帮助",
+    status: false,
+  },
+  {
+    role_name: "VIP用户",
+    role_text: "享有特殊权限的用户",
+    status: true,
+  },
+]);
+
 //分配角色
 function showAssign(item: any) {
   userInfo.value = { ...item };
-  getRoleData();
-  roles.value = userInfo.value.roleids.split(",").map(Number);
+
   assignDialog.value = true;
 }
 
 //保存分配
-async function saveAssign() {
-  await useHttp("/User/A22AddUserRole", "post", {
-    user_id: userInfo.value.user_id,
-    role_id: roles.value.join(","),
-  });
-  getUserData();
+function saveAssign() {
+  const index = users.value.findIndex(
+    (item) => item.user_name === userInfo.value.user_name
+  );
+  if (index !== -1) {
+    users.value[index].roleids = roles.value.join(",");
+  }
   assignDialog.value = false;
 }
 </script>
@@ -226,7 +320,7 @@ async function saveAssign() {
       </v-btn> -->
     </v-col>
     <v-col cols="12">
-      <v-data-table :items="users" :headers="headers" :items-per-page="10">
+      <v-data-table :items="userList" :headers="headers" :items-per-page="10">
         <template v-slot:item.status="{ item }">
           <v-switch
             style="display: inline-block; max-width: 120px"
@@ -261,11 +355,6 @@ async function saveAssign() {
           <v-icon color="red" size="small" @click="showDelete(item.raw)">
             fa-solid fa-trash
           </v-icon>
-        </template>
-        <template v-slot:bottom>
-          <div class="text-center pt-2">
-            <v-pagination v-model="page" :length="pageCount"></v-pagination>
-          </div>
         </template>
       </v-data-table>
     </v-col>
@@ -405,7 +494,7 @@ async function saveAssign() {
             chips
             :items="roleList"
             item-title="role_name"
-            item-value="role_id"
+            item-value="role_name"
             multiple
           ></v-select>
         </v-card-text>

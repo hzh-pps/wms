@@ -83,86 +83,138 @@ let Headers = ref<any[]>([
   },
 ]);
 //存储数据库数据
-let billList = ref<any[]>([]);
-let inLength = ref<number>(0);
-let outLength = ref<number>(0);
-let remainder = ref<number>(0);
-//获取数据库数据
-async function getBillData() {
-  billList.value = [];
-  const data1: any = await useHttp(
-    "/wmsPalletize/G148condition",
-    "get",
-    undefined,
-    {
-      target_place: searchArea.value,
-      container_code: searchContainer.value,
-      sku: searchCode.value,
-      sku_batch_lot: searchLot.value,
-      sku_name: searchName.value,
-      sku_spec: searchGg.value,
-      flag_sync: "Y",
-      target_warehouse: searchWareHouse.value,
-      date_puton_from: searchDateStart,
-      date_puton_to: searchDateEnd,
-    }
-  );
-  inLength.value = data1.data.length;
-  await data1.data.forEach((item: any) => {
-    billList.value.push({
-      type: "in",
-      place_code: item.target_place,
-      container_code: item.container_code,
-      sku_name: item.sku_name,
-      sku_code: item.sku,
-      sku_spec: item.sku_spec,
-      batch_lot: item.sku_batch_lot,
-      sku_qty: item.sku_qty,
-      date: item.time_put_on,
-    });
-  });
+let billList = ref<any[]>([
+  {
+    type: "in",
+    place_code: "A01",
+    container_code: "C001",
+    sku_name: "螺丝刀",
+    sku_code: "10001",
+    sku_spec: "型号A",
+    batch_lot: "BL20230101",
+    sku_qty: 100,
+    date: "2023-01-01T08:00:00Z",
+  },
+  {
+    type: "out",
+    place_code: "A02",
+    container_code: "C002",
+    sku_name: "钳子",
+    sku_code: "10002",
+    sku_spec: "型号B",
+    batch_lot: "BL20230102",
+    sku_qty: 80,
+    date: "2023-01-02T09:00:00Z",
+  },
+  {
+    type: "in",
+    place_code: "A03",
+    container_code: "C003",
+    sku_name: "电钻",
+    sku_code: "10003",
+    sku_spec: "型号C",
+    batch_lot: "BL20230103",
+    sku_qty: 50,
+    date: "2023-01-03T10:00:00Z",
+  },
+  {
+    type: "out",
+    place_code: "A04",
+    container_code: "C004",
+    sku_name: "锤子",
+    sku_code: "10004",
+    sku_spec: "型号D",
+    batch_lot: "BL20230104",
+    sku_qty: 70,
+    date: "2023-01-04T11:00:00Z",
+  },
+  {
+    type: "in",
+    place_code: "A05",
+    container_code: "C005",
+    sku_name: "量尺",
+    sku_code: "10005",
+    sku_spec: "型号E",
+    batch_lot: "BL20230105",
+    sku_qty: 120,
+    date: "2023-01-05T12:00:00Z",
+  },
+  {
+    type: "out",
+    place_code: "A06",
+    container_code: "C006",
+    sku_name: "水平仪",
+    sku_code: "10006",
+    sku_spec: "型号F",
+    batch_lot: "BL20230106",
+    sku_qty: 60,
+    date: "2023-01-06T13:00:00Z",
+  },
+  {
+    type: "in",
+    place_code: "A07",
+    container_code: "C007",
+    sku_name: "电烙铁",
+    sku_code: "10007",
+    sku_spec: "型号G",
+    batch_lot: "BL20230107",
+    sku_qty: 90,
+    date: "2023-01-07T14:00:00Z",
+  },
+  {
+    type: "out",
+    place_code: "A08",
+    container_code: "C008",
+    sku_name: "剪刀",
+    sku_code: "10008",
+    sku_spec: "型号H",
+    batch_lot: "BL20230108",
+    sku_qty: 110,
+    date: "2023-01-08T15:00:00Z",
+  },
+  {
+    type: "in",
+    place_code: "A09",
+    container_code: "C009",
+    sku_name: "手电筒",
+    sku_code: "10009",
+    sku_spec: "型号I",
+    batch_lot: "BL20230109",
+    sku_qty: 100,
+    date: "2023-01-09T16:00:00Z",
+  },
+  {
+    type: "out",
+    place_code: "A10",
+    container_code: "C010",
+    sku_name: "胶带",
+    sku_code: "10010",
+    sku_spec: "型号J",
+    batch_lot: "BL20230110",
+    sku_qty: 150,
+    date: "2023-01-10T17:00:00Z",
+  },
+]);
 
-  const data2: any = await useHttp(
-    "/WmsOutOrder/G170GetOutDetialList",
-    "get",
-    undefined,
-    {
-      container_code: searchContainer.value,
-      place_code: searchArea.value,
-      sku_code: searchCode.value,
-      sku_name: searchName.value,
-      batch_lot: searchLot.value,
-      sku_spec: searchGg.value,
-      createdate_from: searchDateStart,
-      createdate_to: searchDateEnd,
-      flag_done: "Y",
-    }
-  );
-  data2.data = data2.data.filter(
-    (item: any) => item.place_code.charAt(0) === searchWareHouse.value
-  );
-  outLength.value = data2.data.length;
-  data2.data.forEach((item_: any) => {
-    billList.value.push({
-      type: "out",
-      place_code: item_.place_code,
-      container_code: item_.container_code,
-      sku_name: item_.sku_name,
-      sku_code: item_.sku_code,
-      sku_spec: item_.sku_spec,
-      batch_lot: item_.batch_lot,
-      sku_qty: item_.sku_qty,
-      date: item_.reserved10,
-    });
-  });
-  billList.value.sort((a: any, b: any) => {
-    if (a.date > b.date) {
-      return -1;
-    }
-    return 0;
-  });
-  remainder.value = inLength.value - outLength.value;
+let billList2 = ref<any[]>([]);
+//获取数据库数据
+function getBillData() {
+  billList2.value = filterBillList();
 }
+function filterBillList() {
+  return billList.value.filter((item) => {
+    return (
+      (!searchArea.value || item.place_code.includes(searchArea.value)) &&
+      (!searchContainer.value ||
+        item.container_code.includes(searchContainer.value)) &&
+      (!searchName.value || item.sku_name.includes(searchName.value)) &&
+      (!searchGg.value || item.sku_spec.includes(searchGg.value)) &&
+      (!searchCode.value || item.sku_code.includes(searchCode.value)) &&
+      (!searchLot.value || item.batch_lot.includes(searchLot.value))
+    );
+  });
+}
+
 onMounted(() => {
   getBillData();
 });
@@ -310,51 +362,6 @@ let tab = ref<string>("one");
                     >重置查询</v-btn
                   >
                 </v-col>
-                <v-col cols="2">
-                  <v-text-field
-                    label="总入库数"
-                    v-model="inLength"
-                    readonly
-                    variant="outlined"
-                    density="compact"
-                    hide-details
-                    class="mt-2"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="2">
-                  <v-text-field
-                    label="总出库数"
-                    v-model="outLength"
-                    readonly
-                    variant="outlined"
-                    density="compact"
-                    hide-details
-                    class="mt-2"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="2">
-                  <v-text-field
-                    label="剩余库存"
-                    v-model="remainder"
-                    readonly
-                    variant="outlined"
-                    density="compact"
-                    hide-details
-                    class="mt-2"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="2"></v-col>
-                <v-col cols="2">
-                  <v-select
-                    label="仓库"
-                    v-model="searchWareHouse"
-                    :items="['A', 'B', 'C', 'D', 'E', 'F', 'G']"
-                    variant="outlined"
-                    density="compact"
-                    hide-details
-                    class="mt-2"
-                  ></v-select>
-                </v-col>
               </v-row>
             </v-col>
             <v-col cols="12">
@@ -362,7 +369,7 @@ let tab = ref<string>("one");
                 hover
                 :items-per-page="10"
                 :headers="Headers"
-                :items="billList"
+                :items="billList2"
                 style="overflow-x: auto; white-space: nowrap"
                 fixed-footer
                 fixed-header
@@ -373,7 +380,126 @@ let tab = ref<string>("one");
             </v-col>
           </v-row>
         </v-window-item>
-        <v-window-item value="two">拣货打包</v-window-item>
+        <v-window-item value="two">
+          <v-row>
+            <v-col cols="3">
+              <v-text-field
+                label="库位"
+                v-model="searchArea"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                label="容器号"
+                v-model="searchContainer"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                label="物料名称"
+                v-model="searchName"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                label="物料规格"
+                v-model="searchGg"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                label="物料编码"
+                v-model="searchCode"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                label="批次"
+                v-model="searchLot"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                label="最早创建时间"
+                v-model="searchDateStart"
+                type="date"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                label="最晚创建时间"
+                v-model="searchDateEnd"
+                type="date"
+                variant="outlined"
+                density="compact"
+                hide-details
+                class="mt-2"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12">
+              <v-row>
+                <v-col cols="2">
+                  <v-btn
+                    color="blue-darken-2"
+                    class="mr-2 mt-2"
+                    size="default"
+                    @click="filter"
+                    >查询</v-btn
+                  >
+                  <v-btn
+                    color="red"
+                    class="mr-2 mt-2"
+                    size="default"
+                    @click="resetFilter"
+                    >重置查询</v-btn
+                  >
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="12">
+              <v-data-table
+                hover
+                :items-per-page="10"
+                :headers="Headers"
+                :items="billList2"
+                style="overflow-x: auto; white-space: nowrap"
+                fixed-footer
+                fixed-header
+                height="610"
+                no-data-text="没有找到符合的数据"
+              >
+              </v-data-table>
+            </v-col>
+          </v-row>
+        </v-window-item>
       </v-window>
     </v-col>
   </v-row>
