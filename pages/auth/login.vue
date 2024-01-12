@@ -93,6 +93,7 @@ async function passwordLogin() {
   });
 
   useCookie("token").value = data.jwt;
+  useCookie("name").value = data.user.username;
   await nextTick(); // 等待下一个“tick”
   // useCookie("refreshToken").value = data.refresh_token;
   getList();
