@@ -244,7 +244,7 @@ let containerId = ref<any>(null);
 // 组盘上架
 function showGroupDialog(item: any) {
   if (selected.value.length === 0) {
-    return alert("请选择要组盘的收货单");
+    return setSnackbar("black", "请选择要组盘的收货单");
   }
   groupDialog.value = true;
 }

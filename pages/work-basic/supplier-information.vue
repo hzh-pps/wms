@@ -12,152 +12,163 @@ useSeoMeta({
   // 社交媒体分享该页面时显示的图片
   ogImage: "/同日图标.png",
 });
-let supplierName = ref<any>();
+let searchName = ref<any>("");
 let addSupplierName = ref<any>();
-let formAddSupplier=ref<any>(false);
-let showAddDialog=ref<boolean>(false);
-let addSupplierDialog=ref<boolean>(false);
-let supplierDataList=ref<any[]>([]);
-//供应商数据表头
-let headers = ref<any[]>([
+let formAddSupplier = ref<any>(false);
+let showAddDialog = ref<boolean>(false);
+let addSupplierDialog = ref<boolean>(false);
+// 示例供应商数据列表
+let supplierDataList = ref<any[]>([
   {
-    title: "商品编码",
-    align: "center",
-    key: "commoditycode",
-    sortable: false,
-    filterable: true,
+    supplierName: "供应商A",
+    city: "北京",
+    address: "北京市朝阳区某街道123号",
+    principal: "张三",
+    email: "zhangsan@example.com",
+    contact: "13012345678",
   },
   {
-    title: "商品名称",
-    align: "center",
-    key: "commodityname",
-    sortable: false,
-    filterable: true,
+    supplierName: "供应商B",
+    city: "上海",
+    address: "上海市浦东新区另一街道456号",
+    principal: "李四",
+    email: "lisi@example.com",
+    contact: "13112345678",
   },
   {
-    title: "商品类别id",
-    align: "center",
-    key: "typeid",
-    sortable: false,
-    filterable: true,
+    supplierName: "供应商C",
+    city: "广州",
+    address: "广州市天河区那条街789号",
+    principal: "王五",
+    email: "wangwu@example.com",
+    contact: "13212345678",
   },
   {
-    title: "商品描述",
-    align: "center",
-    key: "commodity_description",
-    sortable: false,
-    filterable: true,
+    supplierName: "供应商D",
+    city: "深圳",
+    address: "深圳市南山区这条路101号",
+    principal: "赵六",
+    email: "zhaoliu@example.com",
+    contact: "13312345678",
   },
+  {
+    supplierName: "供应商E",
+    city: "成都",
+    address: "成都市武侯区那个巷子102号",
+    principal: "钱七",
+    email: "qianqi@example.com",
+    contact: "13412345678",
+  },
+  {
+    supplierName: "供应商F",
+    city: "杭州",
+    address: "杭州市西湖区某个楼盘103号",
+    principal: "孙八",
+    email: "sunba@example.com",
+    contact: "13512345678",
+  },
+  {
+    supplierName: "供应商G",
+    city: "南京",
+    address: "南京市鼓楼区那个大厦104号",
+    principal: "周九",
+    email: "zhoujiu@example.com",
+    contact: "13612345678",
+  },
+  {
+    supplierName: "供应商H",
+    city: "武汉",
+    address: "武汉市江汉区某个商场105号",
+    principal: "吴十",
+    email: "wushi@example.com",
+    contact: "13712345678",
+  },
+  {
+    supplierName: "供应商I",
+    city: "重庆",
+    address: "重庆市渝中区那条大街106号",
+    principal: "郑十一",
+    email: "zhengshiyi@example.com",
+    contact: "13812345678",
+  },
+  {
+    supplierName: "供应商J",
+    city: "西安",
+    address: "西安市碑林区这个小区107号",
+    principal: "冯十二",
+    email: "fengshier@example.com",
+    contact: "13912345678",
+  },
+]);
+
+// 供应商信息表头
+let supplierHeaders = ref<any[]>([
   {
     title: "供应商名称",
     align: "center",
-    key: "suppliername",
+    key: "supplierName",
     sortable: false,
     filterable: true,
   },
   {
-    title: "品牌",
+    title: "所在城市",
     align: "center",
-    key: "brand",
+    key: "city",
     sortable: false,
     filterable: true,
   },
   {
-    title: "重量",
+    title: "详细地址",
     align: "center",
-    key: "weight",
+    key: "address",
     sortable: false,
     filterable: true,
   },
   {
-    title: "长度",
+    title: "负责人",
     align: "center",
-    key: "length",
+    key: "principal",
     sortable: false,
     filterable: true,
   },
   {
-    title: "高度",
+    title: "Email",
     align: "center",
-    key: "width",
+    key: "email",
     sortable: false,
     filterable: true,
   },
   {
-    title: "宽度",
+    title: "联系方式",
     align: "center",
-    key: "height",
-    sortable: false,
-    filterable: true,
-  },
-  {
-    title: "体积",
-    align: "center",
-    key: "volume",
-    sortable: false,
-    filterable: true,
-  },
-  {
-    title: "成本",
-    align: "center",
-    key: "cost",
-    sortable: false,
-    filterable: true,
-  },
-  {
-    title: "价格",
-    align: "center",
-    key: "price",
-    sortable: false,
-    filterable: true,
-  },
-  {
-    title: "颜色",
-    align: "center",
-    key: "color",
-    sortable: false,
-    filterable: true,
-  },
-  {
-    title: "操作",
-    align: "center",
-    key: "action",
+    key: "contact",
     sortable: false,
     filterable: true,
   },
 ]);
-async function getSupplierList() {
-  // 使用 Strapi 的过滤语法构建查询参数
-  const queryParams = new URLSearchParams({
-    "filters[？][$containsi]": supplierName.value,
-  }).toString();
+onMounted(() => {
+  getSupplierList();
+});
+let supplierDataList2 = ref<any[]>([]);
+function getSupplierList() {
+  supplierDataList2.value = filterSupplierList();
+}
 
-  // 将查询参数附加到 URL
-  const data: any = await useHttp(`/commoditytypes?${queryParams}`, "get");
-  supplierDataList.value = normalizeStrapiData(data);
+function filterSupplierList() {
+  return supplierDataList.value.filter((item) => {
+    return !searchName.value || item.supplierName.includes(searchName.value);
+  });
 }
 // 新增供应商对话框
-function showEditDialog(item:any){
-
-}
+function showEditDialog(item: any) {}
 //删除供应商
-function showDelDialog(item:any){
-
-}
+function showDelDialog(item: any) {}
 // 确认新增供应商
-function addSation(){
+function addSation() {}
 
-}
-// 格式化数据
-function normalizeStrapiData(strapiResponse: any) {
-  return strapiResponse.data.map((item: any) => ({
-    id: item.id,
-    ...item.attributes,
-  }));
-} 
 //重置搜索
 function resetFilter() {
-  supplierName.value = "";
+  searchName.value = "";
   getSupplierList();
 }
 // 不为空
@@ -188,7 +199,7 @@ const isNullRule = ref<any[]>([(v: any) => !!v || "该字段不能为空"]);
     <v-col cols="3">
       <v-text-field
         label="供应商名称"
-        v-model="supplierName"
+        v-model="searchName"
         variant="outlined"
         density="compact"
         hide-details
@@ -199,8 +210,8 @@ const isNullRule = ref<any[]>([(v: any) => !!v || "该字段不能为空"]);
       <v-data-table
         hover
         :items-per-page="10"
-        :headers="headers"
-        :items="supplierDataList"
+        :headers="supplierHeaders"
+        :items="supplierDataList2"
         style="overflow-x: auto; white-space: nowrap"
         fixed-footer
         fixed-header
@@ -225,8 +236,8 @@ const isNullRule = ref<any[]>([(v: any) => !!v || "该字段不能为空"]);
       </v-data-table>
     </v-col>
   </v-row>
-   <!-- 新增供应商 -->
-   <v-dialog v-model="addSupplierDialog" min-width="400px" width="560px">
+  <!-- 新增供应商 -->
+  <v-dialog v-model="addSupplierDialog" min-width="400px" width="560px">
     <v-card>
       <v-toolbar color="blue">
         <v-toolbar-title> 新增供应商 </v-toolbar-title>
@@ -262,11 +273,7 @@ const isNullRule = ref<any[]>([(v: any) => !!v || "该字段不能为空"]);
         >
           确认
         </v-btn>
-        <v-btn
-          color="grey"
-          size="large"
-          @click="addSupplierDialog = false"
-        >
+        <v-btn color="grey" size="large" @click="addSupplierDialog = false">
           取消
         </v-btn>
       </div>

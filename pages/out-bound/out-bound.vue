@@ -361,7 +361,7 @@ function filterInventoryList2() {
 
 function showGroupDialog(item: any) {
   if (selected.value.length === 0) {
-    return alert("请选择要打包的物料");
+    return setSnackbar("black", "请选择要打包的物料");
   }
   groupDialog.value = true;
 }
@@ -509,7 +509,6 @@ let shippingInfo = ref<any>(null);
 // 发货
 function shipping(item: any) {
   shippingInfo.value = { ...item };
-
   shippingDialog.value = true;
 }
 // 发货

@@ -231,7 +231,88 @@ let headers = ref<any[]>([
     filterable: true,
   },
 ]);
-let merchandiseList = ref<any[]>([]);
+let merchandiseList = ref<any[]>([
+  {
+    commoditycode: "A001",
+    commodityname: "电脑桌",
+    typeid: "101",
+    commodity_description: "适用于办公室的电脑桌",
+    suppliername: "办公家具供应商A",
+    brand: "办公专家",
+    weight: "20kg",
+    length: "120cm",
+    width: "60cm",
+    height: "75cm",
+    volume: "0.54m³",
+    cost: "200元",
+    price: "500元",
+    color: "黑色",
+  },
+  {
+    commoditycode: "A002",
+    commodityname: "办公椅",
+    typeid: "102",
+    commodity_description: "人体工学设计的办公椅",
+    suppliername: "办公家具供应商B",
+    brand: "舒适坐",
+    weight: "15kg",
+    length: "65cm",
+    width: "65cm",
+    height: "130cm",
+    volume: "0.55m³",
+    cost: "150元",
+    price: "400元",
+    color: "灰色",
+  },
+  {
+    commoditycode: "A003",
+    commodityname: "文件柜",
+    typeid: "103",
+    commodity_description: "大容量文件柜，适合存储大量文件",
+    suppliername: "办公家具供应商C",
+    brand: "文件守护者",
+    weight: "35kg",
+    length: "80cm",
+    width: "40cm",
+    height: "200cm",
+    volume: "0.64m³",
+    cost: "300元",
+    price: "800元",
+    color: "白色",
+  },
+  {
+    commoditycode: "A004",
+    commodityname: "会议桌",
+    typeid: "104",
+    commodity_description: "圆形会议桌，可容纳8人",
+    suppliername: "办公家具供应商D",
+    brand: "会议达人",
+    weight: "50kg",
+    length: "240cm",
+    width: "240cm",
+    height: "75cm",
+    volume: "4.32m³",
+    cost: "500元",
+    price: "1500元",
+    color: "棕色",
+  },
+  {
+    commoditycode: "A005",
+    commodityname: "书架",
+    typeid: "105",
+    commodity_description: "多层书架，适合图书分类存放",
+    suppliername: "办公家具供应商E",
+    brand: "知识家",
+    weight: "25kg",
+    length: "90cm",
+    width: "30cm",
+    height: "180cm",
+    volume: "0.486m³",
+    cost: "220元",
+    price: "550元",
+    color: "原木色",
+  },
+]);
 //新增商品按钮
 function showAddDialog() {
   addDialog.value = true;
@@ -245,29 +326,33 @@ function showAddDialog() {
 function showEditDialog(item: any) {}
 function showDelDialog(item: any) {}
 //添加商品
-async function addMerchandise() {
-  if (!addMerchandiseForm.value) return;
+// async function addMerchandise() {
+//   if (!addMerchandiseForm.value) return;
+//   addDialog.value = false;
+//   let productInfo = {
+//     commoditycode: null,
+//     commodityname: addMerchandiseName,
+//     //商品类别id
+//     typeid: null,
+//     commodity_description: addMerchandiseDescription,
+//     suppliername: searchSupplierName,
+//     brand: addMerchandiseBrand,
+//     weight: addMerchandiseWeight,
+//     length: addMerchandiseLength,
+//     width: addMerchandiseWidth,
+//     height: addMerchandiseHeight,
+//     volume: addMerchandiseLength * addMerchandiseWidth * addMerchandiseHeight,
+//     cost: addMerchandiseCost,
+//     price: addMerchandisePrice,
+//     color: addMerchandiseColor,
+//   };
+//   const data: any = await useHttp("/commodityinfos", "post", {
+//     data: productInfo,
+//   });
+// }
+function addMerchandise() {
+  setSnackbar("black", "待开发");
   addDialog.value = false;
-  let productInfo = {
-    commoditycode: null,
-    commodityname: addMerchandiseName,
-    //商品类别id
-    typeid: null,
-    commodity_description: addMerchandiseDescription,
-    suppliername: searchSupplierName,
-    brand: addMerchandiseBrand,
-    weight: addMerchandiseWeight,
-    length: addMerchandiseLength,
-    width: addMerchandiseWidth,
-    height: addMerchandiseHeight,
-    volume: addMerchandiseLength * addMerchandiseWidth * addMerchandiseHeight,
-    cost: addMerchandiseCost,
-    price: addMerchandisePrice,
-    color: addMerchandiseColor,
-  };
-  const data: any = await useHttp("/commodityinfos", "post", {
-    data: productInfo,
-  });
 }
 //删除商品类别
 async function delSation() {
