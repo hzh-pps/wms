@@ -26,6 +26,7 @@ let addMerchandiseColor = ref<any>(null);
 let addMerchandiseWeight = ref<any>(null);
 let addMerchandiseDescription = ref<any>(null);
 let addMerchandiseHeight = ref<any>(null);
+let addMerchandiseLength = ref<any>(null);
 let addMerchandiseBrand = ref<any>(null);
 let addMerchandiseWidth = ref<any>(null);
 let addMerchandiseCost = ref<any>(null);
@@ -43,13 +44,54 @@ let deleteMerchandiseTypeDialog = ref<boolean>(false);
 let selectedBigType = ref<any>(null);
 let selectedMiddleType = ref<any>(null);
 let selectedSmallType = ref<any>(null);
-let form = ref<any>(null);
+let addMerchandiseForm = ref<any>(null);
+let text = ref<any>(null);
+let textfield = ref<any[]>([
+  { label: "商品名称", model: addMerchandiseName },
+  {
+    label: "商品描述",
+    model: addMerchandiseDescription,
+  },
+  {
+    label: "商品品牌",
+    model: addMerchandiseBrand,
+  },
+  {
+    label: "商品重量",
+    model: addMerchandiseWeight,
+  },
+  {
+    label: "商品宽度",
+    model: addMerchandiseLength,
+  },
+  {
+    label: "商品高度",
+    model: addMerchandiseHeight,
+  },
+  {
+    label: "商品宽度",
+    model: addMerchandiseWidth,
+  },
+  {
+    label: "商品成本",
+    model: addMerchandiseCost,
+  },
+  {
+    label: "商品价格",
+    model: addMerchandisePrice,
+  },
+  {
+    label: "商品颜色",
+    model: addMerchandiseColor,
+  },
+]);
 // 商品大类列表
 let productBigCategoryList = ref<any[]>([]);
 // 商品中类列表
 let productMiddleCategoryList = ref<any[]>([]);
 // 商品小类列表
 let productSmallCategoryList = ref<any[]>([]);
+let supplierList = ref<any[]>([]);
 function GetPidDate(item: any) {
   // 使用 Strapi 的过滤语法构建查询参数
   const queryParams = new URLSearchParams({
@@ -71,7 +113,6 @@ async function getMiddleTypeData(item: any) {
     "get"
   );
   productMiddleCategoryList.value = data.data;
-  selectedBigType.value = item;
 }
 // 获取商品小类列表
 async function getSmallTypeData(item: any) {
@@ -81,9 +122,7 @@ async function getSmallTypeData(item: any) {
     "get"
   );
   productSmallCategoryList.value = data.data;
-  selectedMiddleType.value = item;
 }
-
 //商品数据表头
 let headers = ref<any[]>([
   {
@@ -184,13 +223,15 @@ let headers = ref<any[]>([
     sortable: false,
     filterable: true,
   },
+  {
+    title: "操作",
+    align: "center",
+    key: "action",
+    sortable: false,
+    filterable: true,
+  },
 ]);
 let merchandiseList = ref<any[]>([]);
-//搜索
-function filter() {
-  getWareHouseDate();
-}
-function resetFilter() {}
 //新增商品按钮
 function showAddDialog() {
   addDialog.value = true;
@@ -205,14 +246,27 @@ function showEditDialog(item: any) {}
 function showDelDialog(item: any) {}
 //添加商品
 async function addMerchandise() {
-  if (!form.value) return;
-  addDialog = false;
+  if (!addMerchandiseForm.value) return;
+  addDialog.value = false;
   let productInfo = {
-        categoryname: addMerchandiseTypeName.value,
-        pid: "0",
-      };
-  const data: any = await useHttp("/commodities", "post", {
-    data: form.value,
+    commoditycode: null,
+    commodityname: addMerchandiseName,
+    //商品类别id
+    typeid: null,
+    commodity_description: addMerchandiseDescription,
+    suppliername: searchSupplierName,
+    brand: addMerchandiseBrand,
+    weight: addMerchandiseWeight,
+    length: addMerchandiseLength,
+    width: addMerchandiseWidth,
+    height: addMerchandiseHeight,
+    volume: addMerchandiseLength * addMerchandiseWidth * addMerchandiseHeight,
+    cost: addMerchandiseCost,
+    price: addMerchandisePrice,
+    color: addMerchandiseColor,
+  };
+  const data: any = await useHttp("/commodityinfos", "post", {
+    data: productInfo,
   });
 }
 //删除商品类别
@@ -231,25 +285,73 @@ async function delSation() {
 async function addSation() {
   if (!formMerchandiseName.value) return;
   addMerchandiseTypeDialog.value = false;
+  let productInfo = ref<any>(null);
+  let data = ref<any>(null);
   switch (addType.value) {
     case "big":
-      let productInfo = {
+      productInfo = {
         categoryname: addMerchandiseTypeName.value,
         pid: "0",
       };
-      const data: any = await useHttp("/commoditytypes", "post", {
+      data = await useHttp("/commoditytypes", "post", {
         data: productInfo,
       });
       getBigTypeData();
       setSnackbar("green", "添加成功");
       break;
     case "middle":
+      productInfo = {
+        categoryname: addMerchandiseTypeName.value,
+        pid: selectedBigType.value.id,
+      };
+      data = await useHttp("/commoditytypes", "post", {
+        data: productInfo,
+      });
+      getMiddleTypeData(selectedBigType.value);
+      setSnackbar("green", "添加成功");
       break;
     case "small":
+      productInfo = {
+        categoryname: addMerchandiseTypeName.value,
+        pid: selectedMiddleType.value.id,
+      };
+      data = await useHttp("/commoditytypes", "post", {
+        data: productInfo,
+      });
+      getSmallTypeData(selectedMiddleType.value);
+      setSnackbar("green", "添加成功");
       break;
   }
 }
-async function getWareHouseDate() {}
+//获取商品信息
+async function getMerchandiseDate() {
+  // 使用 Strapi 的过滤语法构建查询参数
+  const queryParams = new URLSearchParams({
+    "filters[commoditycode][$containsi]": searchMerchandiseCode.value,
+    "filters[commodityname][$containsi]": searchMerchandiseName.value,
+    "filters[typeid][$containsi]": searchMerchandiseTypeId.value,
+    "filters[suppliername][$containsi]": searchSupplierName.value,
+  }).toString();
+
+  // 将查询参数附加到 URL
+  const data: any = await useHttp(`/commoditytypes?${queryParams}`, "get");
+  merchandiseList.value = normalizeStrapiData(data);
+}
+// 格式化数据
+function normalizeStrapiData(strapiResponse: any) {
+  return strapiResponse.data.map((item: any) => ({
+    id: item.id,
+    ...item.attributes,
+  }));
+}
+//重置搜索
+function resetFilter() {
+  searchMerchandiseCode.value = "";
+  searchMerchandiseName.value = "";
+  searchMerchandiseTypeId.value = "";
+  searchSupplierName.value = "";
+  getMerchandiseDate();
+}
 // 不为空
 const isNullRule = ref<any[]>([(v: any) => !!v || "该字段不能为空"]);
 </script>
@@ -296,7 +398,7 @@ const isNullRule = ref<any[]>([(v: any) => !!v || "该字段不能为空"]);
         color="blue-darken-2"
         class="mr-2 mt-2"
         size="default"
-        @click="filter"
+        @click="getMerchandiseDate()"
         >搜索</v-btn
       >
       <v-btn color="red" class="mr-2 mt-2" size="default" @click="resetFilter"
@@ -353,97 +455,28 @@ const isNullRule = ref<any[]>([(v: any) => !!v || "该字段不能为空"]);
       <v-card-text>
         <v-row>
           <v-col cols="3">
-            <v-form v-model="form">
-              <v-text-field
-                label="商品名称"
-                v-model="addMerchandiseName"
+            <v-form v-model="addMerchandiseForm">
+              <div v-for="item in textfield">
+                <v-text-field
+                  :label="item.label"
+                  :v-model="item.model"
+                  variant="outlined"
+                  density="compact"
+                  hide-details
+                  class="mt-2"
+                  :rules="isNullRule"
+                >
+                </v-text-field>
+              </div>
+              <v-select
+                label="供应商"
                 variant="outlined"
-                density="compact"
                 hide-details
-                class="addDialogInput"
-                :rules="isNullRule"
-              >
-              </v-text-field>
-              <v-text-field
-                label="商品描述"
-                v-model="addMerchandiseDescription"
-                variant="outlined"
+                class="mt-2"
                 density="compact"
-                hide-details
-                class="addDialogInput"
-                :rules="isNullRule"
+                :items="supplierList"
               >
-              </v-text-field>
-              <v-text-field
-                label="商品品牌"
-                v-model="addMerchandiseBrand"
-                variant="outlined"
-                density="compact"
-                hide-details
-                class="addDialogInput"
-                :rules="isNullRule"
-              >
-              </v-text-field>
-              <v-text-field
-                label="商品重量"
-                v-model="addMerchandiseWeight"
-                variant="outlined"
-                density="compact"
-                hide-details
-                class="addDialogInput"
-                :rules="isNullRule"
-              >
-              </v-text-field>
-              <v-text-field
-                label="商品高度"
-                v-model="addMerchandiseHeight"
-                variant="outlined"
-                density="compact"
-                hide-details
-                class="addDialogInput"
-                :rules="isNullRule"
-              >
-              </v-text-field>
-              <v-text-field
-                label="商品宽度"
-                v-model="addMerchandiseWidth"
-                variant="outlined"
-                density="compact"
-                hide-details
-                class="addDialogInput"
-                :rules="isNullRule"
-              >
-              </v-text-field>
-              <v-text-field
-                label="商品成本"
-                v-model="addMerchandiseCost"
-                variant="outlined"
-                density="compact"
-                hide-details
-                class="addDialogInput"
-                :rules="isNullRule"
-              >
-              </v-text-field>
-              <v-text-field
-                label="商品价格"
-                v-model="addMerchandisePrice"
-                variant="outlined"
-                density="compact"
-                hide-details
-                class="addDialogInput"
-                :rules="isNullRule"
-              >
-              </v-text-field>
-              <v-text-field
-                label="商品颜色"
-                v-model="addMerchandiseColor"
-                variant="outlined"
-                density="compact"
-                hide-details
-                class="addDialogInput"
-                :rules="isNullRule"
-              >
-              </v-text-field>
+              </v-select>
             </v-form>
           </v-col>
           <v-col cols="3">
@@ -455,18 +488,28 @@ const isNullRule = ref<any[]>([(v: any) => !!v || "该字段不能为空"]);
             </div>
             <v-card
               variant="elevated"
-              height="520px"
+              height="530px"
               rounded="xl"
               elevation="3"
               theme="light"
             >
               <v-card-text>
-                <v-list lines="one" class="overflow-auto">
+                <v-list
+                  lines="one"
+                  class="overflow-auto"
+                  height="480px"
+                  rounded="xl"
+                >
                   <v-list-item
                     v-for="(item, index) in productBigCategoryList"
                     :key="index"
                     :value="item"
-                    @click="getMiddleTypeData(item)"
+                    @click="
+                      getMiddleTypeData(item),
+                        (selectedBigType = item),
+                        (selectedMiddleType = null),
+                        (productSmallCategoryList = [])
+                    "
                     rounded="xl"
                     color="blue-lighten-2"
                   >
@@ -518,19 +561,24 @@ const isNullRule = ref<any[]>([(v: any) => !!v || "该字段不能为空"]);
             </div>
             <v-card
               variant="elevated"
-              height="520px"
+              height="530px"
               rounded="xl"
               elevation="3"
               theme="light"
             >
               <v-card-text>
-                <v-list lines="one">
+                <v-list
+                  lines="one"
+                  class="overflow-auto"
+                  height="480px"
+                  rounded="xl"
+                >
                   <v-list-item
                     v-for="(item, index) in productMiddleCategoryList"
                     :key="index"
                     :value="item"
                     color="blue-lighten-2"
-                    @click="getSmallTypeData(item)"
+                    @click="getSmallTypeData(item), (selectedMiddleType = item)"
                     rounded="xl"
                   >
                     <v-list-item-content>
@@ -582,13 +630,18 @@ const isNullRule = ref<any[]>([(v: any) => !!v || "该字段不能为空"]);
             </div>
             <v-card
               variant="elevated"
-              height="520px"
+              height="530px"
               rounded="xl"
               elevation="3"
               theme="light"
             >
               <v-card-text>
-                <v-list lines="one">
+                <v-list
+                  lines="one"
+                  class="overflow-auto"
+                  height="480px"
+                  rounded="xl"
+                >
                   <v-list-item
                     v-for="(item, index) in productSmallCategoryList"
                     :key="index"
@@ -627,7 +680,9 @@ const isNullRule = ref<any[]>([(v: any) => !!v || "该字段不能为空"]);
                   style="position: absolute; bottom: 0"
                   rounded="xl"
                   @click="
-                    (addMerchandiseTypeDialog = true), (addType = 'small')
+                    (addMerchandiseTypeDialog = true),
+                      (addType = 'small'),
+                      (addMerchandiseTypeName = null)
                   "
                 >
                   新增小类
@@ -739,8 +794,4 @@ const isNullRule = ref<any[]>([(v: any) => !!v || "该字段不能为空"]);
     </template>
   </v-snackbar>
 </template>
-<style>
-.addDialogInput {
-  margin-top: 16px;
-}
-</style>
+<style></style>
