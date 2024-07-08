@@ -212,7 +212,16 @@ async function deleteCertain() {
 }
 //禁用用户
 async function disableUser(item: any) {
-  console.log(item);
+  item.status = !item.status;
+  userInfo.value;
+  const data: any = await useHttp("/User/A19PutUserInfo", "put", {
+    Uid: item.user_id,
+    Status: item.status,
+    UName: item.user_name,
+    Work_No: item.work_no,
+  });
+  getUserData();
+  editDialog.value = false;
 }
 //已选的角色
 let roles = ref<any[]>([]);
